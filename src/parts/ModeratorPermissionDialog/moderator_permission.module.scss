@@ -1,0 +1,119 @@
+#root {
+    width: 100%;
+    height: 100%;
+}
+
+h2 {
+    width: 100%;
+    font-size: 1.5rem;
+    color: black;
+    text-align: center;
+    margin: 10px 0px;
+    padding-bottom: 10px;
+}
+
+.formContainer {
+    width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    position: relative;
+
+    .closeButton {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+    }
+
+    form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        user-select: none;
+
+        .formGroup {
+            margin-bottom: 20px;
+            width: 100%;
+            height: 250px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            overflow-x: hidden;
+            overflow-y: scroll;
+
+            .permissionItem {
+                width: 100%;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+
+                label {
+                    font-size: 1rem;
+                    color: #000;
+                    flex: 1;
+                    display: flex;
+                    flex-direction: row;
+                    align-items: center;
+                    gap: 5px;
+                }
+
+                input {
+                    width: 18px;
+                    height: 18px;
+                }
+            }
+
+            .inputWrapper {
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                margin-top: 5px;
+                border-radius: 4px;
+                border: 1px solid #ccc;
+                padding: 2px;
+
+                .citizenIdentityCardImage {
+                    width: 300px;
+                    height: 200px;
+                    border-radius: 5px;
+                    padding: 2px;
+                }
+            }
+
+            input[type='text'],
+            input[type='password'],
+            input[type='file'] {
+                width: 100%;
+                outline: none;
+                font-size: 0.875rem;
+                border: none;
+                padding: 6px;
+            }
+        }
+
+        .confirmButton {
+            width: 103px;
+            height: 36px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+
+            label {
+                cursor: pointer;
+            }
+        }
+    }
+}

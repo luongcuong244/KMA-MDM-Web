@@ -1,0 +1,61 @@
+#root {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: calc(100% - 24px);
+    margin: 0px 12px;
+}
+
+.sendButtonLayer {
+    width: 155px;
+    height: 38px;
+    position: relative;
+    border-radius: 100px;
+    border: 1.5px solid rgba(94, 94, 94, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 20px;
+    cursor: pointer;
+}
+
+.sendButtonLayer1 {
+    position: absolute;
+    top: 0px;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    background-color: #2B8D07;
+    border-radius: inherit;
+    z-index: 2;
+}
+
+.sendButtonLayer2 {
+    position: absolute;
+    top: 0px;
+    bottom: 3px;
+    left: 0px;
+    right: 0px;
+    background-color: #E2FF8B;
+    border-radius: inherit;
+    z-index: 3;
+}
+
+.sendButtonLayer3 {
+    position: absolute;
+    top: 1px;
+    bottom: 3px;
+    left: 0px;
+    right: 0px;
+    background-image: linear-gradient(#98F345, #69D33F);
+    border-radius: inherit;
+    z-index: 4;
+}
+
+.sendButton {
+    font-size: 1rem;
+    font-weight: 600;
+    color: rgb(44, 44, 44);
+    z-index: 5;
+    letter-spacing: 0.5px;
+}

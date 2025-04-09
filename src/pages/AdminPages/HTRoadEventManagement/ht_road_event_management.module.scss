@@ -1,0 +1,78 @@
+#root {
+    width: 100%;
+    height: calc(100vh - 60px); // bad code here (60px is the height of the header)
+    display: flex;
+    flex-direction: column;
+    padding: 24px;
+}
+
+
+h1 {
+    font-size: 2rem;
+    font-weight: bold;
+    color: black;
+    margin: 0px;
+    margin-bottom: 16px;
+}
+
+.divider {
+    width: 100%;
+    height: 1px;
+    background-color: #E0E0E0;
+}
+
+.tip {
+    font-size: 1rem;
+    color: black;
+    margin: 12px 0px;
+}
+
+.navContainer {
+    width: 100%;
+    height: 45px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 20px;
+    margin: 12px 0px;
+}
+
+.navLink {
+    width: 150px;
+    height: 100%;
+    border-radius: 5px;
+    font-weight: 600;
+    font-family: Linotte;
+    font-size: 0.875rem;
+    color: black;
+    text-decoration: none;
+}
+
+.navActiveStyle {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #5EFF9E;
+    border-radius: inherit;
+    border: none;
+    box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.25);
+}
+
+.navInactiveStyle {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #ffffff;
+    border-radius: inherit;
+    border: 1px solid #000000;
+}
+
+.routes {
+    flex: 1 1 auto;
+    height: 100%;
+    overflow: auto;
+}

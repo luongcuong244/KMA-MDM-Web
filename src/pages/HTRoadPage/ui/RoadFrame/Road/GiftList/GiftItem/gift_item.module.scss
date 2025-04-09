@@ -1,0 +1,132 @@
+.item {
+    width: 200px;
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.box {
+    width: 50%;
+    aspect-ratio: 1;
+    background-color: #2D79AF;
+    border: 1px solid rgba(23, 70, 112, 0.5);
+    border-radius: 8px;
+    position: relative;
+    margin-top: 14%;
+    cursor: pointer;
+}
+
+.notClaimedBox {
+    background-color: #D28319;
+    animation: identifier 1s infinite;
+}
+
+@keyframes identifier {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+
+}
+
+.itemBackground {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    bottom: 4px;
+    right: 4px;
+    background-color: #83D7FA;
+    border-radius: 6px;
+    box-shadow: inset 0px 0px 5px 0px rgba(255, 255, 255, 0.65);
+}
+
+.notClaimedItemBackground {
+    background-color: #F2D71C;
+    animation: colorChange 1s infinite;
+}
+
+// keyframe for background color change
+@keyframes colorChange {
+    0% {
+        background-color: #F2D71C;
+    }
+
+    50% {
+        background-color: #efd843;
+    }
+
+    100% {
+        background-color: #F2D71C;
+    }
+}
+
+.cardLock {
+    width: 25%;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    transform: translate(-30%, -50%);
+}
+
+.claimBanner {
+    width: 100%;
+    position: absolute;
+    bottom: 0px;
+}
+
+.itemIcon {
+    width: 63%;
+    position: absolute;
+    top: 8%;
+    left: 0px;
+    right: 0px;
+    margin: auto;
+}
+
+.itemQuantity {
+    width: 100%;
+    position: absolute;
+    bottom: 9%;
+    left: 0px;
+    right: 0px;
+    margin: auto;
+    text-align: center;
+    font-size: 0.875rem;
+    letter-spacing: 1px;
+    font-weight: 800;
+    color: #0F5871;
+    font-family: MPlus2;
+}
+
+.notClaimedItemQuantity {
+    color: #6F6000;
+}
+
+.ringHighlight {
+    width: 75%;
+    position: absolute;
+    top: 18%;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    margin: auto;
+    animation: rotate 10s linear infinite;
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}

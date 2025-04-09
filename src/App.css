@@ -1,0 +1,162 @@
+@font-face {
+  font-family: "Linotte";
+  src: url(../src/fonts/Linotte/Linotte-Regular.ttf);
+  font-weight: normal;
+}
+
+@font-face {
+  font-family: "Linotte";
+  src: url(../src/fonts/Linotte/Linotte-Bold.ttf);
+  font-weight: bold;
+}
+
+@font-face {
+  font-family: "Linotte";
+  src: url(../src/fonts/Linotte/Linotte-Heavy.ttf);
+  font-weight: 900;
+}
+
+@font-face {
+  font-family: "Linotte";
+  src: url(../src/fonts/Linotte/Linotte-Light.ttf);
+  font-weight: 300;
+}
+
+@font-face {
+  font-family: "Linotte";
+  src: url(../src/fonts/Linotte/Linotte-Semi-Bold.ttf);
+  font-weight: 600;
+}
+
+@font-face {
+  font-family: "MPlus2";
+  src: url(../src/fonts/MPlus2/MPLUS2-Thin.ttf);
+  font-weight: 100;
+}
+
+@font-face {
+  font-family: "MPlus2";
+  src: url(../src/fonts/MPlus2/MPLUS2-ExtraLight.ttf);
+  font-weight: 200;
+}
+
+@font-face {
+  font-family: "MPlus2";
+  src: url(../src/fonts/MPlus2/MPLUS2-Light.ttf);
+  font-weight: 300;
+}
+
+@font-face {
+  font-family: "MPlus2";
+  src: url(../src/fonts/MPlus2/MPLUS2-Regular.ttf);
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: "MPlus2";
+  src: url(../src/fonts/MPlus2/MPLUS2-Medium.ttf);
+  font-weight: 500;
+}
+
+@font-face {
+  font-family: "MPlus2";
+  src: url(../src/fonts/MPlus2/MPLUS2-SemiBold.ttf);
+  font-weight: 600;
+}
+
+@font-face {
+  font-family: "MPlus2";
+  src: url(../src/fonts/MPlus2/MPLUS2-Bold.ttf);
+  font-weight: 700;
+}
+
+@font-face {
+  font-family: "MPlus2";
+  src: url(../src/fonts/MPlus2/MPLUS2-ExtraBold.ttf);
+  font-weight: 800;
+}
+
+@font-face {
+  font-family: "MPlus2";
+  src: url(../src/fonts/MPlus2/MPLUS2-Black.ttf);
+  font-weight: 900;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 100%;
+  font-family: Linotte;
+  color: #fff;
+  background-color: black;
+}
+
+body {
+  margin: 0;
+}
+
+table {
+  border-spacing: 0px;
+  white-space: nowrap; 
+}
+
+p {
+  padding: 0px;
+  margin: 0px;
+}
+
+ol, ul {
+  list-style: none;
+  margin: 0px;
+  padding: 0px;
+}
+
+.wrapApp {
+  padding-top: 50px;
+  flex-direction: row;
+  display: flex;
+}
+
+button {
+  background: none;
+  color: inherit;
+  border: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+  outline: inherit;
+}
+
+img {
+  object-fit: cover;
+}
+
+input:focus {
+  outline: none;
+  border-color: initial;
+  box-shadow: none;
+}
+
+.pageBackground {
+  width: 100%;
+  height: calc(100vh - 50px);
+  margin-left: 240px;
+  padding: 0 20px;
+  background-image: linear-gradient(315deg, #696ac1 30%, #5c8fb0 74%);
+}
+
+/* @media screen and (max-width: 1000px) {
+  html {
+    display: none;
+  }
+} */
+
+@media screen and (max-width: 768px) {
+  
+}
+
+@media screen and (max-width: 576px) {
+  
+}

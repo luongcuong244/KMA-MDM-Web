@@ -1,0 +1,171 @@
+$use-button-width: 150px;
+
+#root {
+    width: 100%;
+    height: 70px;
+    border-radius: 10px;
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 8px calc(8px + #{$use-button-width}) 8px 8px;
+}
+
+.layer1 {
+    position: absolute;
+    top: 0px;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    background-color: rgba(130, 189, 197, 0.5);
+    border-radius: inherit;
+}
+
+.layer2 {
+    position: absolute;
+    top: 0px;
+    bottom: 3px;
+    left: 0px;
+    right: 0px;
+    background-color: #29AAE6;
+    border-radius: inherit;
+}
+
+.itemImageContainer {
+    height: 100%;
+    aspect-ratio: 1;
+    margin-left: 12px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.itemBackground {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+}
+
+.itemImage {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    padding: 4px;
+}
+
+.itemInfo {
+    flex: 1;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: between;
+    z-index: 1;
+    padding: 4px 12px;
+    gap: 8px;
+}
+
+.itemName {
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    color: #ffffff;
+}
+
+.itemDescription {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #14679B;
+    overflow: hidden;
+}
+
+.itemQuantity {
+    height: 60%;
+    aspect-ratio: 1.5;
+    background-color: #1785BB;
+    border-radius: 10px;
+    border: 3px solid #3FB3E9;
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    color: #ffffff;
+    z-index: 1;
+    padding-top: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.useButtonContainer {
+    width: #{$use-button-width};
+    height: calc(100% - 3px);
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    bottom: 3px;
+    border-radius: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.trapezoidImage {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    border-radius: inherit;
+    object-fit: fill;
+}
+
+.useButtonLayer {
+    padding: 6px 20px;
+    position: relative;
+    border-radius: 100px;
+    border: 1.5px solid rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 20px;
+    cursor: pointer;
+}
+
+.useButtonLayer1 {
+    position: absolute;
+    top: 0px;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    background-color: #CB6B0D;
+    border-radius: inherit;
+    z-index: 2;
+}
+
+.useButtonLayer2 {
+    position: absolute;
+    top: 0px;
+    bottom: 3px;
+    left: 0px;
+    right: 0px;
+    background-color: #FFFF76;
+    border-radius: inherit;
+    z-index: 3;
+}
+
+.useButtonLayer3 {
+    position: absolute;
+    top: 1px;
+    bottom: 3px;
+    left: 0px;
+    right: 0px;
+    background-image: linear-gradient(#FFF176, #FFBB1A);
+    border-radius: inherit;
+    z-index: 4;
+}
+
+.useButton {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: rgba(0, 0, 0, 0.75);
+    z-index: 5;
+    -webkit-text-stroke: 1px #cb6c0d5e;
+}

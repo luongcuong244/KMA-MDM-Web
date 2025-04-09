@@ -1,0 +1,85 @@
+$ringHighlightSize: 350px;
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    width: 100vw;
+    position: relative;
+    user-select: none;
+    opacity: 0;
+    scale: 0.5;
+    transition: all 0.3s ease-in-out;
+}
+
+.visible {
+    opacity: 1;
+    scale: 1;
+}
+
+.loading {
+    display: flex;
+    background-color: rgb(104, 104, 104);
+    border-radius: 8px;
+    width: 50px;
+    height: 40px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.claimedContainer {
+    width: $ringHighlightSize;
+    aspect-ratio: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+}
+
+.claimedText {
+    font-size: 2rem;
+    font-weight: 900;
+    color: #FFF9B2;
+    font-family: "MPlus2";
+    letter-spacing: 0.5px;
+    -webkit-text-stroke: 1px #9C2928;
+    text-align: center;
+}
+
+.gift {
+    margin: 20px 0px;
+    width: calc($ringHighlightSize / 2.5);
+    height: calc($ringHighlightSize / 2.5);
+}
+
+.giftName {
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: #ffffff;
+    letter-spacing: 0.5px;
+    -webkit-text-stroke: 1px #0000007c;
+    text-align: center;
+    margin-top: 10px;
+}
+
+.giftQuantity {
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: #ffef95;
+    letter-spacing: 0.5px;
+    -webkit-text-stroke: 1px #0000007c;
+    text-align: center;
+    margin-top: 5px;
+}
+
+.closeButton {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+}

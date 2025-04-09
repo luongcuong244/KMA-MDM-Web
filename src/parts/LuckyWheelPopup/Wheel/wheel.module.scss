@@ -1,0 +1,84 @@
+$wheelCellContentHeight: 3vh;
+
+.container {
+    position: relative;
+    height: 60%;
+    aspect-ratio: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.wheelNeedle {
+    position: absolute;
+    width: 15%;
+    margin-bottom: 12.5%;
+    z-index: 2;
+    user-select: none;
+}
+
+.backgroundLayer1 {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.wheel {
+    position: absolute;
+    top: 7.02%;
+    left: 0;
+    right: 0.2%;
+    margin: auto;
+    width: 82%;
+    height: 82%;
+    border-radius: 50%;
+    overflow: hidden;
+    rotate: calc((360 / var(--seg)) * 1deg);
+
+    img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        height: 100%;
+    }
+}
+
+.number {
+    position: absolute;
+    width: 50%;
+    height: 50%;
+    transform-origin: bottom right;
+    transform: rotate(calc((360 / var(--seg)) * var(--i) * 1deg));
+    // clip-path: polygon(0 0, calc((56 * 8 / var(--seg)) * 1%) 0, 100% 100%, 0 calc((56 * 8 / var(--seg)) * 1%));
+    display: flex;
+    justify-content: end;
+    align-items: end;
+    user-select: none;
+
+    span {
+        position: relative;
+        height: $wheelCellContentHeight;
+        transform-origin: bottom right;
+        transform: rotate(calc((360 / var(--seg)) * 1deg)) translateY(calc($wheelCellContentHeight / 2));
+        font-size: 1.5rem;
+        font-weight: 900;
+        color: #ffd700;
+        margin-bottom: 30%;
+        margin-right: 30%;
+        -webkit-text-stroke: 1px rgba(0, 0, 0, 0.5);
+        text-shadow: 3px 5px 2px rgba($color: #000000, $alpha: 0.15);
+        display: flex;
+        align-items: center;
+        flex-direction: row;
+        gap: 8px;
+
+        img {
+            position: relative;
+            height: 100%;
+            margin-bottom: 2px;
+        }
+    }
+}
