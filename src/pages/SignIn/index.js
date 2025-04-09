@@ -5,6 +5,7 @@ import Loader from "../../components/Loader";
 import AlertDialog from "../../components/AlertDialog";
 import AlertError from "../../components/AlertError";
 import authService from "../../services/auth.service";
+import Logo from "../../assets/imgs/logo.png";
 
 const SignInPage = () => {
   const [userName, setUserName] = useState("");
@@ -48,12 +49,8 @@ const SignInPage = () => {
   };
 
   const onUserNameChange = (event) => {
-    const inputValue = event.target.value.toUpperCase();
-    const regex = /^[a-zA-Z0-9]+$/;
-
-    if (regex.test(inputValue) || inputValue == "") {
-      setUserName(inputValue);
-    }
+    const inputValue = event.target.value;
+    setUserName(inputValue);
   };
 
   const onPasswordChange = (event) => {
@@ -64,7 +61,14 @@ const SignInPage = () => {
   return (
     <div id={styles.root}>
       <div className={styles.signInContainer}>
-        <h1 className={styles.title}>Đăng nhập</h1>
+        <div className={styles.title}>
+          <img
+            className={styles.logo}
+            src={Logo}
+            alt="Logo"
+          />
+          <p className={styles.titleText}>KMA MDM</p>
+        </div>
         <div className={styles.signInForm}>
           <div className={styles.inputGroup}>
             <label className={styles.inputLabel}>Tên người dùng</label>
@@ -99,24 +103,26 @@ const SignInPage = () => {
             />
           </div>
           <>{warning && <AlertError text={warning} />}</>
-          <button
-            className={styles.signInButton}
-            onClick={onClickSignInButton}
-            disabled={waitingForServer}
-          >
-            {waitingForServer ? <Loader /> : "Đăng nhập"}
-          </button>
-          <p
-            className={styles.forgotPasswordText}
-            onClick={() => {
-              if (waitingForServer) {
-                return;
-              }
-              setOpenDialog(true);
-            }}
-          >
-            Quên mật khẩu?
-          </p>
+          <div className={styles.buttonGroup}>
+            <p
+              className={styles.forgotPasswordText}
+              onClick={() => {
+                if (waitingForServer) {
+                  return;
+                }
+                setOpenDialog(true);
+              }}
+            >
+              Quên mật khẩu?
+            </p>
+            <button
+              className={styles.signInButton}
+              onClick={onClickSignInButton}
+              disabled={waitingForServer}
+            >
+              {waitingForServer ? <Loader /> : "Đăng nhập"}
+            </button>
+          </div>
         </div>
       </div>
       <AlertDialog

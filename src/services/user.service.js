@@ -1,12 +1,13 @@
 import CONSTANT from "../utils/constant";
 import axiosApiInstance from "../config/axios.instance.config";
 
-const API_URL = CONSTANT.baseUrl + "/api/user/";
+const API_URL = CONSTANT.baseUrl + "/user/";
 
 class UserService {
 
   async getCurrentUser() {
-    return axiosApiInstance.get(API_URL + "get-info").then((res) => {
+    return axiosApiInstance.get(API_URL + "get-current-info").then((res) => {
+      console.log(res.data);
       if (res.data && res.data.message) {
         return null;
       } else {
@@ -14,19 +15,6 @@ class UserService {
       }
     });
   }
-
-  async getTopupRequests() {
-    return axiosApiInstance.get(API_URL + "get-topup-requests").then((res) => {
-      return res.data;
-    });
-  }
-
-  async createTopupRequest(amount) {
-    return axiosApiInstance.post(API_URL + "create-topup-request", amount).then((res) => {
-      return res.data;
-    });
-  }
-
 }
 
 export default new UserService();

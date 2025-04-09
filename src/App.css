@@ -1,4 +1,4 @@
-@font-face {
+/* @font-face {
   font-family: "Linotte";
   src: url(../src/fonts/Linotte/Linotte-Regular.ttf);
   font-weight: normal;
@@ -80,7 +80,7 @@
   font-family: "MPlus2";
   src: url(../src/fonts/MPlus2/MPLUS2-Black.ttf);
   font-weight: 900;
-}
+} */
 
 * {
   box-sizing: border-box;
@@ -88,7 +88,8 @@
 
 html {
   font-size: 100%;
-  font-family: Linotte;
+  /* font-family: Linotte; */
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   color: #fff;
   background-color: black;
 }

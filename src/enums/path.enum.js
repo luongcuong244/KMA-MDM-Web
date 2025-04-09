@@ -2,8 +2,6 @@ const PATH = {
   root: "/",
   admin: "/admin",
   signIn: "/dang-nhap",
-  event: "/su-kien",
-  free_account: "/tai-khoan-mien-phi",
   moderator: "/moderator",
   account_management: "/moderator/quan-ly-tai-khoan",
   user_debt: "/moderator/no-nguoi-dung",

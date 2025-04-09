@@ -1,7 +1,5 @@
 const CONSTANT = {
-  // baseUrl: "https://cybergameserver.top/cyber-game-server",
-  baseUrl: "http://localhost:5000",
-  pageSize: 20,
+  baseUrl: "http://localhost:5050",
 };
 
 export default CONSTANT;

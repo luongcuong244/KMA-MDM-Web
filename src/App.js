@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
 import SignInPage from "./pages/SignIn";
 import PATH from "./enums/path.enum";
-import ModeratorPages from "./pages/ModeratorPages";
 import AdminPages from "./pages/AdminPages";
+import AccountPages from "./pages/AccountPages";
 import userService from "./services/user.service";
 import "./App.css";
 import { selectUser, setUser } from "./slices/user.slice";
@@ -14,8 +14,6 @@ import AlertDialog from "./components/AlertDialog";
 import GoToHomePage from "./pages/GoToHome";
 import NeedSignInPage from "./pages/NeedSignIn";
 import ROLE from "./enums/role.enum";
-import HTRoadPage from "./pages/HTRoadPage";
-import PublicPages from "./pages/PublicPages";
 
 function App() {
 
@@ -72,12 +70,9 @@ function App() {
           />
 
           <Routes>
-            <Route path={`${PATH.root}*`} element={<PublicPages />} />
-            <Route 
-              path={`${PATH.event}/*`} 
-              element={
-                user?.userId ? <HTRoadPage /> : <NeedSignInPage />
-              } 
+            <Route
+              path={"/*"}
+              element={user?._id ? <AccountPages /> : <SignInPage />}
             />
             <Route 
               path={`${PATH.admin}/*`}
@@ -86,22 +81,6 @@ function App() {
                   (user?.role === ROLE.admin) ? <AdminPages /> : <GoToHomePage message={"Bạn không có quyền truy cập trang này!"} />
                   : <NeedSignInPage />
               }
-            />
-            <Route
-              path={`${PATH.moderator}/*`}
-              element={
-                user?.userId ?
-                  (user?.role === ROLE.moderator || user?.role === ROLE.admin) ? <ModeratorPages /> : <GoToHomePage message={"Bạn không có quyền truy cập trang này!"} />
-                  : <NeedSignInPage />
-              }
-            />
-            {/* <Route
-              path={`${PATH.account}/*`}
-              element={user?.userId ? <AccountPages /> : <NeedSignInPage />}
-            /> */}
-            <Route
-              path={PATH.signIn}
-              element={user?.userId ? <GoToHomePage /> : <SignInPage />}
             />
           </Routes>
         </>
