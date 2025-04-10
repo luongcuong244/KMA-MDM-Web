@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, Navigate } from "react-router-dom";
 import SignInPage from "./pages/SignIn";
 import PATH from "./enums/path.enum";
 import AdminPages from "./pages/AdminPages";
@@ -82,6 +82,7 @@ function App() {
                   : <NeedSignInPage />
               }
             />
+            <Route path="*" element={<Navigate to={"/"} />} />
           </Routes>
         </>
       )}

@@ -4,8 +4,6 @@ import Cookies from "universal-cookie";
 import { store } from "../redux/store";
 import { setUser } from "../slices/user.slice";
 
-const cookies = new Cookies();
-
 const API_URL = CONSTANT.baseUrl + "/auth/";
 
 class AuthService {
@@ -22,7 +20,7 @@ class AuthService {
     async signOut() {
         return axiosApiInstance.post(API_URL + "sign-out")
         .then(() => {
-            store.dispatch(setUser(null));
+            window.location.href = "/";
         })
         .catch((err) => {
             let errorMessage = err.response?.data?.message;

@@ -15,6 +15,13 @@ class UserService {
       }
     });
   }
+
+  async changePassword(oldPassword, newPassword) {
+    return axiosApiInstance.post(API_URL + "change-password", {
+      oldPassword: oldPassword,
+      newPassword: newPassword,
+    });
+  }
 }
 
 export default new UserService();
