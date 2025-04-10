@@ -8,19 +8,20 @@ const MdmPageNavGenerator = ({ routes, parentRoute }) => {
     const NavLinkItem = (path, text) => {
         return (
             <li>
-                <NavLink to={path} className={styles.navLink}>
+                <NavLink to={path} style={{textDecoration: "none"}}>
                     {({ isActive, isPending }) => (
                         <>
-                            {isActive && <div className={styles.mark} />}
-                            <span
-                                className={clsx(
-                                    styles.navText,
-                                    isActive ? styles.activeColor : styles.inactiveColor
-                                )}
-                                autoCorrect="false"
-                            >
-                                {text}
-                            </span>
+                            <div className={clsx(styles.navLink, isActive ? styles.activeNavLink : styles.inactiveNavLink)}>
+                                <span
+                                    className={clsx(
+                                        styles.navText,
+                                        isActive ? styles.activeColor : styles.inactiveColor
+                                    )}
+                                    autoCorrect="false"
+                                >
+                                    {text}
+                                </span>
+                            </div>
                         </>
                     )}
                 </NavLink>
@@ -30,16 +31,16 @@ const MdmPageNavGenerator = ({ routes, parentRoute }) => {
 
     return (
         <div id={styles.root}>
-            <nav className={styles.navContainer}>
-                <ul>
-                    {routes.map((route) => {
-                        return NavLinkItem(
-                            route.path,
-                            route.text,
-                        );
-                    })}
-                </ul>
-            </nav>
+            <ul className={styles.navContainer}>
+                <li className={styles.emptyNavLink} style={{width: 32}}></li>
+                {routes.map((route) => {
+                    return NavLinkItem(
+                        route.path,
+                        route.text,
+                    );
+                })}
+                <li className={styles.emptyNavLink} style={{flex: 1}}></li>
+            </ul>
             <div className={styles.routes}>
                 <Routes>
                     {routes.map((route, index) => {
