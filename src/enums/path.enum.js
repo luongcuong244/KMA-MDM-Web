@@ -1,12 +1,12 @@
 const PATH = {
   root: "/",
   admin: "/admin",
-  signIn: "/dang-nhap",
-  about: "/gioi-thieu",
-  profile: "/thong-tin-ca-nhan",
-  device: "/thiet-bi",
-  application: "/ung-dung",
-  configuration: "/cau-hinh",
+  signIn: "/sign-in",
+  about: "/about",
+  profile: "/profile",
+  device: "/devices",
+  application: "/applications",
+  configuration: "/configurations",
 };
 
 export default PATH;
