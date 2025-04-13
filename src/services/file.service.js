@@ -13,6 +13,14 @@ class FileService {
         });
     }
 
+    async uploadFile(formData) {
+        return axiosApiInstance.post(API_URL + "upload-file", formData, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        });
+    }
+
     async cancelUpload(filePath) {
         return axiosApiInstance.post(API_URL + "cancel-upload", {
             filePath,

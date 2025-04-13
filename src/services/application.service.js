@@ -13,8 +13,16 @@ class ApplicationService {
         });
     }
 
+    async getAppIcon() {
+        return axiosApiInstance.get(API_URL + "get-app-icon");
+    }
+
+    async addAppIcon(data) {
+        return axiosApiInstance.post(API_URL + "add-app-icon", data);
+    }
+
     async addApplication(data) {
-        return axiosApiInstance.post(API_URL + "add", data);
+        return axiosApiInstance.post(API_URL + "add-application", data);
     }
 }
 

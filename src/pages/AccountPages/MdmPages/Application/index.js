@@ -44,8 +44,8 @@ export default function Application() {
         }
     })
 
-    const handleSubmit = (data) => {
-        console.log("Form submitted:", data);
+    const handleSubmit = (newApplication) => {
+        dispatch(fetchApplications({ searchTerm: "" }));
     };
 
     return (
@@ -99,9 +99,13 @@ export default function Application() {
                                 <tbody>
                                     {
                                         filteredApplications.map((config) => {
-                                            let lastestVersion = config.versions.reduce((latest, current) =>
+                                            let lastestVersion = config.versions.length > 0 ? config.versions.reduce((latest, current) =>
                                                 current.versionCode > latest.versionCode ? current : latest
-                                            );
+                                            ) : {
+                                                versionCode: 0,
+                                                versionName: "0",
+                                                url: "",
+                                            };
                                             return (
                                                 <tr key={config.id}>
                                                     <td>{config.pkg}</td>
@@ -146,7 +150,9 @@ export default function Application() {
                     </div>
                 )
             }
-            <AddApplicationDialog isOpen={open} onClose={() => setOpen(false)} onSubmit={handleSubmit} />
+            {
+                open && <AddApplicationDialog isOpen={open} onClose={() => setOpen(false)} onSubmit={handleSubmit} />
+            }
         </div>
     );
 }
