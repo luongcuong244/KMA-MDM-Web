@@ -8,6 +8,7 @@ const PATH = {
   application: "/applications",
   applicationVersion: "/application/:pkg/versions",
   configuration: "/configurations",
+  editConfiguration: "/configuration/:id",
 };
 
 export default PATH;

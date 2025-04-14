@@ -12,6 +12,14 @@ class ConfigurationService {
             },
         });
     }
+
+    async getConfiguration(id) {
+        return axiosApiInstance.get(API_URL + "get-configuration", {
+            params: {
+                id: id,
+            },
+        });
+    }
 }
 
 export default new ConfigurationService();

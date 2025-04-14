@@ -3,8 +3,11 @@ import styles from "./configuration.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchConfigurations, selectConfigurations } from "../../../../slices/configuration.slice";
 import Loader from "../../../../components/Loader";
+import { useNavigate } from "react-router-dom";
+import PATH from "../../../../enums/path.enum";
 
 export default function Configuration() {
+    const navigate = useNavigate();
     const dispatch = useDispatch();
     const configurations = useSelector(selectConfigurations);
 
@@ -17,6 +20,10 @@ export default function Configuration() {
 
     const handleSearch = () => {
         dispatch(fetchConfigurations({ searchTerm }));
+    }
+
+    const handleEditConfiguration = (configuration) => {
+        navigate(PATH.editConfiguration.replace(":id", configuration._id));
     }
 
     return (
@@ -49,7 +56,7 @@ export default function Configuration() {
                                         <td>{config.name}</td>
                                         <td>{config.description}</td>
                                         <td className={styles.actions}>
-                                            <button className={styles.edit}>Sửa</button>
+                                            <button className={styles.edit} onClick={() => handleEditConfiguration(config)}>Sửa</button>
                                             <button className={styles.delete}>Xóa</button>
                                             <button className={styles.copy}>Sao chép</button>
                                         </td>

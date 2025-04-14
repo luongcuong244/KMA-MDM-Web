@@ -89,7 +89,7 @@ export default function Application() {
                                 />
                                 <label>Hiện ứng dụng hệ thống</label>
                             </div>
-                            <div className={styles.filter}>
+                            {/* <div className={styles.filter}>
                                 <input
                                     type="checkbox"
                                     className={styles.checkbox}
@@ -97,7 +97,7 @@ export default function Application() {
                                     onChange={(e) => setDisplayMyApplicationsOnly(e.target.checked)}
                                 />
                                 <label>Chỉ hiện ứng dụng của tôi</label>
-                            </div>
+                            </div> */}
                         </div>
                         <div className={styles.configTable}>
                             <table>

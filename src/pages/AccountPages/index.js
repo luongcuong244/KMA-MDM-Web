@@ -11,6 +11,7 @@ import Cookies from "universal-cookie";
 import authService from "../../services/auth.service";
 import MdmPages from "./MdmPages";
 import ApplicationVersion from "./ApplicationVersion";
+import EditConfiguration from "./EditConfiguration";
 
 const cookies = new Cookies();
 
@@ -71,6 +72,7 @@ const AccountPages = () => {
         <Route path={PATH.about} element={<About />} />
         <Route path={PATH.profile} element={<Profile />} />
         <Route path={PATH.applicationVersion} element={<ApplicationVersion />} />
+        <Route path={PATH.editConfiguration} element={<EditConfiguration />} />
         <Route path="*" element={<Navigate to={"/"} />} />
       </Routes>
     </div>
