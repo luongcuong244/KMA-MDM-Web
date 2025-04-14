@@ -6,6 +6,7 @@ const PATH = {
   profile: "/profile",
   device: "/devices",
   application: "/applications",
+  applicationVersion: "/application/:pkg/versions",
   configuration: "/configurations",
 };
 

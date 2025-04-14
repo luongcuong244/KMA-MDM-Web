@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from "react";
 import styles from "./application.module.scss";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { fetchApplications, selectApplications } from "../../../../slices/application.slice";
 import Loader from "../../../../components/Loader";
 import AddApplicationDialog from "../../../../parts/AddApplicationDialog";
 import EditApplicationDialog from "../../../../parts/EditApplicationDialog";
+import PATH from "../../../../enums/path.enum";
 
 export default function Application() {
+    const navigate = useNavigate();
     const dispatch = useDispatch();
     const applications = useSelector(selectApplications);
 
@@ -34,6 +37,10 @@ export default function Application() {
     const handleEditApplication = (application) => {
         setOpenEditApplicationDialog(true);
         setSelectedApplication(application);
+    }
+
+    const handleGoToApplicationVersion = (application) => {
+        navigate(PATH.applicationVersion.replace(":pkg", application.pkg));
     }
 
     const filteredApplications = (applications.data ?? []).filter((app) => {
@@ -122,7 +129,7 @@ export default function Application() {
                                                     <td>{lastestVersion.url ?? ""}</td>
                                                     <td>{config.showIcon ? "+" : ""}</td>
                                                     <td className={styles.actions}>
-                                                        <button className={styles.edit}>Phiên bản</button>
+                                                        <button className={styles.edit} onClick={() => handleGoToApplicationVersion(config)}>Phiên bản</button>
                                                         <button className={styles.copy} onClick={() => handleEditApplication(config)}>Sửa</button>
                                                         <button className={styles.delete}>Xóa</button>
                                                     </td>

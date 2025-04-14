@@ -28,6 +28,22 @@ class ApplicationService {
     async editApplication(data) {
         return axiosApiInstance.post(API_URL + "edit-application", data);
     }
+
+    async getApplication(packageName) {
+        return axiosApiInstance.get(API_URL + "get-application", {
+            params: {
+                packageName: packageName,
+            },
+        });
+    }
+
+    async addApkVersion(data) {
+        return axiosApiInstance.post(API_URL + "add-apk-version", data);
+    }
+
+    async deleteApkVersion(data) {
+        return axiosApiInstance.post(API_URL + "delete-apk-version", data);
+    }
 }
 
 export default new ApplicationService();
