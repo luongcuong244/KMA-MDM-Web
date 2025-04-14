@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchApplications, selectApplications } from "../../../../slices/application.slice";
 import Loader from "../../../../components/Loader";
 import AddApplicationDialog from "../../../../parts/AddApplicationDialog";
+import EditApplicationDialog from "../../../../parts/EditApplicationDialog";
 
 export default function Application() {
     const dispatch = useDispatch();
@@ -13,7 +14,9 @@ export default function Application() {
     const [showSystemApps, setShowSystemApps] = useState(false);
     const [displayMyApplicationsOnly, setDisplayMyApplicationsOnly] = useState(false);
 
-    const [open, setOpen] = useState(false);
+    const [openAddApplicationDialog, setOpenAddApplicationDialog] = useState(false);
+    const [openEditApplicationDialog, setOpenEditApplicationDialog] = useState(false);
+    const [selectedApplication, setSelectedApplication] = useState(null);
 
     useEffect(() => {
         // Fetch applications from the server
@@ -25,7 +28,12 @@ export default function Application() {
     }
 
     const handleAddApplication = () => {
-        setOpen(true);
+        setOpenAddApplicationDialog(true);
+    }
+
+    const handleEditApplication = (application) => {
+        setOpenEditApplicationDialog(true);
+        setSelectedApplication(application);
     }
 
     const filteredApplications = (applications.data ?? []).filter((app) => {
@@ -115,10 +123,8 @@ export default function Application() {
                                                     <td>{config.showIcon ? "+" : ""}</td>
                                                     <td className={styles.actions}>
                                                         <button className={styles.edit}>Phiên bản</button>
-                                                        <button className={styles.copy}>Sửa</button>
-                                                        {
-                                                            !config.isSystemApp && <button className={styles.delete}>Xóa</button>
-                                                        }
+                                                        <button className={styles.copy} onClick={() => handleEditApplication(config)}>Sửa</button>
+                                                        <button className={styles.delete}>Xóa</button>
                                                     </td>
                                                 </tr>
                                             )
@@ -151,7 +157,24 @@ export default function Application() {
                 )
             }
             {
-                open && <AddApplicationDialog isOpen={open} onClose={() => setOpen(false)} onSubmit={handleSubmit} />
+                openAddApplicationDialog && 
+                    <AddApplicationDialog 
+                        isOpen={openAddApplicationDialog} 
+                        onClose={() => setOpenAddApplicationDialog(false)} 
+                        onSubmit={handleSubmit} 
+                    />
+            }
+            {
+                selectedApplication && openEditApplicationDialog && 
+                    <EditApplicationDialog 
+                    isOpen={openEditApplicationDialog} 
+                    onClose={() => {
+                        setOpenEditApplicationDialog(false);
+                        setSelectedApplication(null);
+                    }} 
+                    onSubmit={handleSubmit}
+                    application={selectedApplication}
+                />
             }
         </div>
     );

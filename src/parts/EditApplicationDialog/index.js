@@ -1,24 +1,19 @@
 import React, { useEffect, useState } from "react";
-import styles from "./add_application_dialog.module.scss";
+import styles from "./edit_application_dialog.module.scss";
 import clsx from "clsx";
-import fileService from "../../services/file.service";
 import applicationService from "../../services/application.service";
 import AddIconDialog from "../AddIconDialog";
 
-const AddApplicationDialog = ({ isOpen, onClose, onSubmit }) => {
+const EditApplicationDialog = ({ isOpen, onClose, onSubmit, application }) => {
     const [error, setError] = useState("");
-    const [apkFileName, setApkFileName] = useState("");
-    const [apkUploadData, setApkUploadData] = useState(null);
-    const [packageName, setPackageName] = useState("");
-    const [appName, setAppName] = useState("");
-    const [version, setVersion] = useState("");
-    const [isSystemApp, setIsSystemApp] = useState(false);
-    const [showIcon, setShowIcon] = useState(false);
-    const [iconName, setIconName] = useState("");
+    const [packageName, setPackageName] = useState(application.pkg ?? "");
+    const [appName, setAppName] = useState(application.name ?? "");
+    const [showIcon, setShowIcon] = useState(application.showIcon ?? false);
+    const [iconName, setIconName] = useState(application.iconText ?? "");
 
     const [openAddNewIconDialog, setOpenAddNewIconDialog] = useState(false);
     const [appIcons, setAppIcons] = useState([null]);
-    const [iconId, setIconId] = useState(null);
+    const [iconId, setIconId] = useState(application.icon ?? null);
 
     useEffect(() => {
         applicationService.getAppIcon()
@@ -34,36 +29,32 @@ const AddApplicationDialog = ({ isOpen, onClose, onSubmit }) => {
             });
     }, []);
 
-    if (!isOpen) return null;
+    if (!isOpen || !application) return null;
 
     const handleSubmit = (e) => {
         if (!appName.trim()) {
             setError("Tên ứng dụng không được để trống");
             return;
         }
-        if (isSystemApp) {
+        if (application.isSystemApp) {
             if (!packageName.trim()) {
                 setError("Tên package không được để trống");
-                return;
-            }
-        } else {
-            if (!apkUploadData) {
-                setError("Vui lòng tải lên file APK");
                 return;
             }
         }
         setError("");
 
-        applicationService.addApplication({
-            apkServerPath: apkUploadData ? apkUploadData.data.serverPath : null,
+        console.log("iconID", iconId);
+        console.log("iconName", iconName)
+
+        applicationService.editApplication({
+            id: application._id,
             appName: appName,
-            packageName: isSystemApp ? packageName : apkUploadData.data.fileDetails.pkg,
-            versionName: isSystemApp ? "0" : apkUploadData.data.fileDetails.version,
-            versionCode: isSystemApp ? 0 : apkUploadData.data.fileDetails.versionCode,
-            isSystemApp: isSystemApp,
+            packageName: application.isSystemApp ? packageName : application.pkg,
             showIcon: showIcon,
             iconId: showIcon ? iconId : null,
             iconName: showIcon ? (!iconName ? null : iconName) : null,
+            isSystemApp: application.isSystemApp,
         }).then((response) => {
             if (response.data) {
                 console.log("Application added successfully:", response.data.message);
@@ -81,59 +72,8 @@ const AddApplicationDialog = ({ isOpen, onClose, onSubmit }) => {
     };
 
     const handleClose = () => {
-        console.log("Closing dialog");
-
-        if (apkUploadData) {
-            fileService.cancelUpload(apkUploadData.data.serverPath)
-                .catch((error) => {
-                    console.error("Error canceling upload:", error);
-                    setError("Error canceling upload");
-                });
-        }
         onClose();
     }
-
-    const handleClearApkFile = () => {
-        if (!apkUploadData || !apkUploadData.data) return;
-        fileService.cancelUpload(apkUploadData.data.serverPath)
-            .then(() => {
-                setApkFileName("");
-                setApkUploadData(null);
-                setError("");
-            })
-            .catch((error) => {
-                console.error("Error canceling upload:", error);
-                setError("Error canceling upload");
-            });
-    }
-
-    const handleApkFileChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            // get file name
-            setApkFileName(file.name);
-
-            const formData = new FormData();
-            formData.append("apkFile", file);
-            // Call the upload function here
-            fileService.uploadApk(formData)
-                .then((response) => {
-                    setApkUploadData(response.data);
-                    setError("");
-                    console.log("File uploaded successfully:", response.data);
-                })
-                .catch((error) => {
-                    console.error("Error uploading file:", error);
-                    if (error.response && error.response.data) {
-                        setError(error.response.data.message);
-                    } else {
-                        setError("Error uploading file");
-                    }
-                });
-        } else {
-            console.log("No file selected");
-        }
-    };
 
     const handleAddNewIcon = (icon) => {
         setAppIcons((prevIcons) => [...prevIcons, icon]);
@@ -157,7 +97,7 @@ const AddApplicationDialog = ({ isOpen, onClose, onSubmit }) => {
         );
     };
 
-    const renderCheckboxField = (label, value, onChange) => {
+    const renderCheckboxField = (label, value, onChange, disable) => {
         return (
             <div className={styles.field}>
                 <label className={styles.label}>{label}</label>
@@ -167,6 +107,7 @@ const AddApplicationDialog = ({ isOpen, onClose, onSubmit }) => {
                         className={styles.checkBox}
                         checked={value}
                         onChange={onChange}
+                        disabled={disable}
                     />
                 </div>
             </div>
@@ -222,10 +163,18 @@ const AddApplicationDialog = ({ isOpen, onClose, onSubmit }) => {
         );
     }
 
+    const lastestVersion = application.versions.length > 0 ? application.versions.reduce((latest, current) =>
+        current.versionCode > latest.versionCode ? current : latest
+    ) : {
+        versionCode: 0,
+        versionName: "0",
+        url: "",
+    };
+
     return (
         <div className={styles.dialogBackdrop}>
             <div className={styles.dialog}>
-                <label className={styles.title}>Thêm ứng dụng</label>
+                <label className={styles.title}>Sửa ứng dụng</label>
                 {
                     error && <label className={styles.error}>{error}</label>
                 }
@@ -234,9 +183,9 @@ const AddApplicationDialog = ({ isOpen, onClose, onSubmit }) => {
                         renderTextInputField(
                             "Tên Package",
                             "Nhập package",
-                            isSystemApp ? packageName : (apkUploadData && apkUploadData.data.fileDetails.pkg) ?? packageName,
+                            application.isSystemApp ? packageName : application.pkg,
                             (e) => setPackageName(e.target.value),
-                            isSystemApp ? false : apkUploadData && apkUploadData.data.fileDetails.pkg
+                            !application.isSystemApp,
                         )
                     }
                     {
@@ -252,26 +201,17 @@ const AddApplicationDialog = ({ isOpen, onClose, onSubmit }) => {
                         renderTextInputField(
                             "Phiên bản",
                             "Nhập phiên bản",
-                            isSystemApp ? "0" : (apkUploadData && apkUploadData.data.fileDetails.version) ?? version,
-                            (e) => setVersion(e.target.value),
+                            lastestVersion.versionName,
+                            null,
                             true
                         )
                     }
                     {
                         renderCheckboxField(
                             "Ứng dụng hệ thống",
-                            isSystemApp,
-                            (e) => setIsSystemApp(e.target.checked)
-                        )
-                    }
-                    {
-                        !isSystemApp && renderFileInputField(
-                            ".apk",
-                            "Chọn file APK", 
-                            handleApkFileChange,
-                            apkUploadData,
-                            apkFileName,
-                            handleClearApkFile,
+                            application.isSystemApp,
+                            null,
+                            true
                         )
                     }
                     {
@@ -308,7 +248,7 @@ const AddApplicationDialog = ({ isOpen, onClose, onSubmit }) => {
                         )
                     }
                     <div className={styles.dialogActions}>
-                        <button type="button" onClick={handleSubmit}>Thêm</button>
+                        <button type="button" onClick={handleSubmit}>Cập nhật</button>
                         <button type="button" onClick={handleClose}>Hủy</button>
                     </div>
                 </div>
@@ -320,4 +260,4 @@ const AddApplicationDialog = ({ isOpen, onClose, onSubmit }) => {
     );
 };
 
-export default AddApplicationDialog;
+export default EditApplicationDialog;

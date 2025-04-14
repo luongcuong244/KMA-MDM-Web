@@ -24,6 +24,10 @@ class ApplicationService {
     async addApplication(data) {
         return axiosApiInstance.post(API_URL + "add-application", data);
     }
+
+    async editApplication(data) {
+        return axiosApiInstance.post(API_URL + "edit-application", data);
+    }
 }
 
 export default new ApplicationService();
