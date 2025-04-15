@@ -2,12 +2,15 @@ import React, { useEffect } from "react";
 import styles from "./edit_configuration.module.scss";
 import { useParams } from "react-router-dom";
 import configurationService from "../../../services/configuration.service";
+import clsx from "clsx";
+import CommonSettings from "./CommonSettings";
 
 export default function EditConfiguration() {
     const { id } = useParams();
     const [configuration, setConfiguration] = React.useState(null);
     const [error, setError] = React.useState(null);
     const [loading, setLoading] = React.useState(true);
+    const [activeTab, setActiveTab] = React.useState("common");
 
     useEffect(() => {
         console.log("Fetching configuration for id:", id);
@@ -31,37 +34,42 @@ export default function EditConfiguration() {
             });
     }, []);
 
-    // const onClickAddVersionButton = () => {
-    //     setOpenAddVersionDialog(true);
-    // }
+    const NavItem = (key, text) => {
+        const isActive = activeTab === key;
+        return (
+            <li key={key} onClick={() => setActiveTab(key)}>
+                <div className={clsx(styles.navLink, isActive ? styles.activeNavLink : styles.inactiveNavLink)}>
+                    <span
+                        className={clsx(
+                            styles.navText,
+                            isActive ? styles.activeColor : styles.inactiveColor
+                        )}
+                    >
+                        {text}
+                    </span>
+                </div>
+            </li>
+        );
+    };
 
-    // const onSubmitAddVersion = (version) => {
-    //     window.location.reload();
-    // }
-
-    // const handleDeleteVersion = (version) => {
-    //     if (application.versions.length <= 1) {
-    //         alert("Không thể xoá phiên bản này vì đây là phiên bản duy nhất.");
-    //         return;
-    //     }
-    //     const confirmDelete = window.confirm("Bạn có chắc chắn muốn xoá phiên bản này không?");
-    //     if (confirmDelete) {
-    //         applicationService.deleteApkVersion({
-    //             packageName: pkg,
-    //             versionCode: version.versionCode,
-    //         })
-    //         .then((response) => {
-    //             window.location.reload();
-    //         })
-    //         .catch((error) => {
-    //             if (error.response) {
-    //                 setError(error.response.data.message);
-    //             } else {
-    //                 setError("An error occurred while deleting the version.");
-    //             }
-    //         });
-    //     }
-    // }
+    const renderTabContent = () => {
+        switch (activeTab) {
+            case "common":
+                return <CommonSettings />;
+            case "design":
+                return <div>Design Settings Component</div>;
+            case "apps":
+                return <div>Applications Component</div>;
+            case "mdm":
+                return <div>MDM Settings Component</div>;
+            case "app-settings":
+                return <div>Application Settings Component</div>;
+            case "files":
+                return <div>Files Component</div>;
+            default:
+                return null;
+        }
+    };
 
     return (
         <div id={styles.root}>
@@ -76,51 +84,17 @@ export default function EditConfiguration() {
                 !loading && !error && (
                     <>
                         <p className={styles.title}><p className={styles.subTitle}>Cấu hình </p>"{configuration?.name ?? ""}"</p>
-                        {/* {
-                            application.versions.length > 0 ? (
-                                <div className={styles.configTable}>
-                                    <table>
-                                        <thead>
-                                            <tr>
-                                                <th>Tên phiên bản</th>
-                                                <th>Mã phiên bản</th>
-                                                <th>Đường dẫn</th>
-                                                <th>Hành động</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {
-                                                application.versions.map(
-                                                    (version) => {
-                                                        let canNotDelete = application.versions.length <= 1;
-                                                        return (
-                                                            <tr key={version.versionCode}>
-                                                                <td>{version.versionName}</td>
-                                                                <td>{version.versionCode}</td>
-                                                                <td>{version.url}</td>
-                                                                <td className={styles.actions}>
-                                                                    <button 
-                                                                    className={styles.delete} 
-                                                                    style={{
-                                                                        opacity: canNotDelete ? 0.5 : 1,
-                                                                        pointerEvents: canNotDelete ? "none" : "auto",
-                                                                        cursor: canNotDelete ? "not-allowed" : "pointer"
-                                                                    }}
-                                                                    onClick={() => handleDeleteVersion(version)}
-                                                                    >Xoá</button>
-                                                                </td>
-                                                            </tr>
-                                                        )
-                                                    }
-                                                )
-                                            }
-                                        </tbody>
-                                    </table>
-                                </div>
-                            ) : (
-                                <span className={styles.noVersion}>Không có phiên bản nào được tìm thấy</span>
-                            )
-                        } */}
+                        <ul className={styles.navContainer}>
+                            {NavItem("common", "Cài đặt chung")}
+                            {NavItem("design", "Cài đặt giao diện")}
+                            {NavItem("apps", "Ứng dụng được phép")}
+                            {NavItem("mdm", "Cài đặt quản lý thiết bị")}
+                            {NavItem("app-settings", "Cài đặt cho ứng dụng")}
+                            {NavItem("files", "Tệp đính kèm")}
+                        </ul>
+                        <div className={styles.routes}>
+                            {renderTabContent()}
+                        </div>
                     </>
                 )
             }
