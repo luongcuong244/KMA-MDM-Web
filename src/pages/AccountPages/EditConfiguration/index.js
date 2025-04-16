@@ -91,6 +91,7 @@ export default function EditConfiguration() {
                             {NavItem("mdm", "Cài đặt quản lý thiết bị")}
                             {NavItem("app-settings", "Cài đặt cho ứng dụng")}
                             {NavItem("files", "Tệp đính kèm")}
+                            <li className={styles.emptyNavLink} style={{ flex: 1 }}></li>
                         </ul>
                         <div className={styles.routes}>
                             {renderTabContent()}

@@ -22,3 +22,68 @@
     text-align: center;
     line-height: 2;
 }
+
+.field {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-bottom: 16px;
+
+    .label {
+        width: 20%;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #333;
+        margin-right: 24px;
+        text-align: right;
+    }
+
+    .inputContainer {
+        flex: 1;
+        height: 34px;
+        display: flex;
+        align-items: center;
+    }
+
+    .inputContainerBorder {
+        background-color: white;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        padding: 0px 12px;
+        font-size: 0.875rem;
+        color: #555;
+    }
+
+    .input {
+        width: 100%;
+        text-align: left;
+        border: none;
+    }
+
+    .checkBox {
+        width: 30px;
+        height: 30px;
+        margin-left: 16px;
+        cursor: pointer;
+    }
+
+    .eyeButton {
+        height: 34px;
+        padding: 14px;
+        color: #333;
+        font-size: 14px;
+        border-radius: 4px;
+        background-color: #fff;
+        border: 1px solid #ccc;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 0px 16px;
+
+        &:hover {
+            background-color: #f6f8fc;
+            border-color: #535353;
+        }
+    }
+}
