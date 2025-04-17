@@ -4,6 +4,8 @@ import { useParams } from "react-router-dom";
 import configurationService from "../../../services/configuration.service";
 import clsx from "clsx";
 import CommonSettings from "./CommonSettings";
+import DesignSettings from "./DesignSettings";
+import Applications from "./Applications";
 
 export default function EditConfiguration() {
     const { id } = useParams();
@@ -57,9 +59,9 @@ export default function EditConfiguration() {
             case "common":
                 return <CommonSettings />;
             case "design":
-                return <div>Design Settings Component</div>;
+                return <DesignSettings />;
             case "apps":
-                return <div>Applications Component</div>;
+                return <Applications />;
             case "mdm":
                 return <div>MDM Settings Component</div>;
             case "app-settings":

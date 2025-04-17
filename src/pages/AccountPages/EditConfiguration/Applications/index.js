@@ -1,49 +1,53 @@
 import React, { useState, useEffect } from "react";
-import styles from "./application.module.scss";
+import styles from "./applications.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { fetchApplications, selectApplications } from "../../../../slices/application.slice";
 import Loader from "../../../../components/Loader";
-import AddApplicationDialog from "../../../../parts/AddApplicationDialog";
-import EditApplicationDialog from "../../../../parts/EditApplicationDialog";
-import PATH from "../../../../enums/path.enum";
 
-export default function Application() {
-    const navigate = useNavigate();
+export default function Applications() {
     const dispatch = useDispatch();
     const applications = useSelector(selectApplications);
 
+    const [applicationConfigs, setApplicationConfigs] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [showSystemApps, setShowSystemApps] = useState(false);
     const [displayMyApplicationsOnly, setDisplayMyApplicationsOnly] = useState(false);
-
-    const [openAddApplicationDialog, setOpenAddApplicationDialog] = useState(false);
-    const [openEditApplicationDialog, setOpenEditApplicationDialog] = useState(false);
-    const [selectedApplication, setSelectedApplication] = useState(null);
 
     useEffect(() => {
         // Fetch applications from the server
         dispatch(fetchApplications({ searchTerm: "" }));
     }, [])
 
+    useEffect(() => {
+        if (applications.data) {
+            setApplicationConfigs(applications.data.map((app) => {
+                let lastestVersion = (app.versions ?? []).length > 0 ? app.versions.reduce((latest, current) =>
+                    current.versionCode > latest.versionCode ? current : latest
+                ) : {
+                    versionCode: 0,
+                    versionName: "0",
+                    url: "",
+                };
+                return {
+                    application: app,
+                    version: lastestVersion,
+                    screenOrder: 0,
+                    showIcon: false,
+                    remove: false,
+                    runAfterInstall: false,
+                    runAtBoot: false,
+                }
+            }));
+        }
+    }, applications.data)
+
     const handleSearch = () => {
-        // dispatch(fetchApplications({ searchTerm }));
+        
     }
 
-    const handleAddApplication = () => {
-        setOpenAddApplicationDialog(true);
-    }
-
-    const handleEditApplication = (application) => {
-        setOpenEditApplicationDialog(true);
-        setSelectedApplication(application);
-    }
-
-    const handleGoToApplicationVersion = (application) => {
-        navigate(PATH.applicationVersion.replace(":pkg", application.pkg));
-    }
-
-    const filteredApplications = (applications.data ?? []).filter((app) => {
+    const filteredApplications = applicationConfigs.filter((appConfig) => {
+        let app = appConfig.application;
         if (displayMyApplicationsOnly) {
             if (app.isSystemApp) {
                 return false;
@@ -65,10 +69,6 @@ export default function Application() {
         }
     })
 
-    const handleSubmit = (newApplication) => {
-        dispatch(fetchApplications({ searchTerm: "" }));
-    };
-
     return (
         <div id={styles.root}>
             <div className={styles.searchBarContainer}>
@@ -80,7 +80,6 @@ export default function Application() {
                     value={searchTerm}
                 />
                 <button className={styles.searchButton} onClick={handleSearch}>Tìm kiếm</button>
-                <button className={styles.searchButton} onClick={handleAddApplication}>Thêm</button>
             </div>
             {
                 !applications.isLoading && filteredApplications.length > 0 && (
@@ -119,24 +118,18 @@ export default function Application() {
                                 </thead>
                                 <tbody>
                                     {
-                                        filteredApplications.map((config) => {
-                                            let lastestVersion = config.versions.length > 0 ? config.versions.reduce((latest, current) =>
-                                                current.versionCode > latest.versionCode ? current : latest
-                                            ) : {
-                                                versionCode: 0,
-                                                versionName: "0",
-                                                url: "",
-                                            };
+                                        filteredApplications.map((appConfig) => {
+                                            let app = appConfig.application;
                                             return (
-                                                <tr key={config.id}>
-                                                    <td>{config.pkg}</td>
-                                                    <td>{config.name}</td>
-                                                    <td>{lastestVersion.versionName}</td>
-                                                    <td>{lastestVersion.url ?? ""}</td>
-                                                    <td>{config.showIcon ? "+" : ""}</td>
+                                                <tr key={app.id}>
+                                                    <td>{app.pkg}</td>
+                                                    <td>{app.name}</td>
+                                                    <td>{appConfig.version.versionName}</td>
+                                                    <td>{appConfig.version.url ?? ""}</td>
+                                                    <td>{app.showIcon ? "+" : ""}</td>
                                                     <td className={styles.actions}>
-                                                        <button className={styles.edit} onClick={() => handleGoToApplicationVersion(config)}>Phiên bản</button>
-                                                        <button className={styles.copy} onClick={() => handleEditApplication(config)}>Sửa</button>
+                                                        <button className={styles.edit}>Phiên bản</button>
+                                                        <button className={styles.copy}>Sửa</button>
                                                         <button className={styles.delete}>Xóa</button>
                                                     </td>
                                                 </tr>
@@ -168,26 +161,6 @@ export default function Application() {
                         <span className={styles.errorText}>{applications.errorMessage}</span>
                     </div>
                 )
-            }
-            {
-                openAddApplicationDialog && 
-                    <AddApplicationDialog 
-                        isOpen={openAddApplicationDialog} 
-                        onClose={() => setOpenAddApplicationDialog(false)} 
-                        onSubmit={handleSubmit} 
-                    />
-            }
-            {
-                selectedApplication && openEditApplicationDialog && 
-                    <EditApplicationDialog 
-                    isOpen={openEditApplicationDialog} 
-                    onClose={() => {
-                        setOpenEditApplicationDialog(false);
-                        setSelectedApplication(null);
-                    }} 
-                    onSubmit={handleSubmit}
-                    application={selectedApplication}
-                />
             }
         </div>
     );
