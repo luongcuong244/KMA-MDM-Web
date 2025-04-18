@@ -72,18 +72,9 @@ const AddApplicationConfigDialog = ({ configuration, isOpen, onClose, onSubmit }
                         />
                     </div>
                 </div>
-                <div>
-                    {
-                        // renderTextInputField(
-                        //     "Tên Package",
-                        //     "Nhập package",
-                        //     isSystemApp ? packageName : (apkUploadData && apkUploadData.data.fileDetails.pkg) ?? packageName,
-                        //     (e) => setPackageName(e.target.value),
-                        //     isSystemApp ? false : apkUploadData && apkUploadData.data.fileDetails.pkg
-                        // )
-                    }
-                    
-                </div>
+                {
+                    // show search bar here
+                }
                 <div className={styles.dialogActions}>
                     <button type="button" onClick={handleSubmit}>Thêm</button>
                     <button type="button" onClick={handleClose}>Hủy</button>
@@ -91,6 +82,6 @@ const AddApplicationConfigDialog = ({ configuration, isOpen, onClose, onSubmit }
             </div>
         </div>
     );
-};
 
+};
 export default AddApplicationConfigDialog;
