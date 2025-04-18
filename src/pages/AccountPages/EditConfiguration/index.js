@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import styles from "./edit_configuration.module.scss";
 import { useParams } from "react-router-dom";
 import configurationService from "../../../services/configuration.service";
@@ -13,6 +13,13 @@ export default function EditConfiguration() {
     const [error, setError] = React.useState(null);
     const [loading, setLoading] = React.useState(true);
     const [activeTab, setActiveTab] = React.useState("common");
+
+    const commonTab = useMemo(() => <CommonSettings />, []);
+    const designTab = useMemo(() => <DesignSettings />, []);
+    const appsTab = useMemo(() => <Applications configuration={configuration} />, [configuration]);
+    const mdmTab = useMemo(() => <div>MDM Settings Component</div>, []);
+    const appSettingsTab = useMemo(() => <div>Application Settings Component</div>, []);
+    const filesTab = useMemo(() => <div>Files Component</div>, []);
 
     useEffect(() => {
         console.log("Fetching configuration for id:", id);
@@ -96,7 +103,24 @@ export default function EditConfiguration() {
                             <li className={styles.emptyNavLink} style={{ flex: 1 }}></li>
                         </ul>
                         <div className={styles.routes}>
-                            {renderTabContent()}
+                            <div style={{ display: activeTab === "common" ? "flex" : "none" }}>
+                                {commonTab}
+                            </div>
+                            <div style={{ display: activeTab === "design" ? "flex" : "none" }}>
+                                {designTab}
+                            </div>
+                            <div style={{ display: activeTab === "apps" ? "flex" : "none" }} className={styles.flex}>
+                                {appsTab}
+                            </div>
+                            <div style={{ display: activeTab === "mdm" ? "flex" : "none" }}>
+                                {mdmTab}
+                            </div>
+                            <div style={{ display: activeTab === "app-settings" ? "flex" : "none" }}>
+                                {appSettingsTab}
+                            </div>
+                            <div style={{ display: activeTab === "files" ? "flex" : "none" }}>
+                                {filesTab}
+                            </div>
                         </div>
                     </>
                 )

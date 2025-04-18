@@ -1,6 +1,7 @@
 #root {
     display: flex;
     flex-direction: column;
+    flex: 1;
     width: 100vw;
     height: 100vh;
     background: white;
@@ -197,4 +198,8 @@
     width: 70%;
     overflow: auto;
     margin-top: 12px;
+}
+
+.flex {
+    flex: 1;
 }

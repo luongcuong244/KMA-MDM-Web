@@ -39,7 +39,7 @@
     padding-bottom: 20px;
 
     .label {
-        width: 30%;
+        width: 25%;
         font-size: 0.875rem;
         font-weight: 600;
         color: #333;
@@ -48,7 +48,7 @@
     }
 
     .inputContainer {
-        width: 70%;
+        width: 75%;
         height: 34px;
         display: flex;
         align-items: center;
@@ -128,4 +128,5 @@
     margin-bottom: 8px;
     text-align: center;
     font-weight: 500;
+    width: 100%;
 }

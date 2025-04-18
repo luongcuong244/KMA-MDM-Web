@@ -1,55 +1,62 @@
 import React, { useState, useEffect } from "react";
 import styles from "./applications.module.scss";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchApplications, selectApplications } from "../../../../slices/application.slice";
 import Loader from "../../../../components/Loader";
 import AddApplicationConfigDialog from "../../../../parts/AddApplicationConfigDialog";
 
 export default function Applications({ configuration }) {
-    const dispatch = useDispatch();
-    const applications = useSelector(selectApplications);
-
     const [applicationConfigs, setApplicationConfigs] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
-    const [showSystemApps, setShowSystemApps] = useState(false);
+    const [showSystemApps, setShowSystemApps] = useState(true);
     const [displayMyApplicationsOnly, setDisplayMyApplicationsOnly] = useState(false);
 
     const [showAddApplication, setShowAddApplication] = useState(false);
 
     useEffect(() => {
-        // Fetch applications from the server
-        dispatch(fetchApplications({ searchTerm: "" }));
+        if (configuration) {
+            setApplicationConfigs(configuration.applications);
+        }
     }, [])
 
-    useEffect(() => {
-        if (applications.data) {
-            setApplicationConfigs(applications.data.map((app) => {
-                let lastestVersion = (app.versions ?? []).length > 0 ? app.versions.reduce((latest, current) =>
-                    current.versionCode > latest.versionCode ? current : latest
-                ) : {
-                    versionCode: 0,
-                    versionName: "0",
-                    url: "",
-                };
-                return {
-                    application: app,
-                    version: lastestVersion,
-                    screenOrder: 0,
-                    showIcon: false,
-                    remove: false,
-                    runAfterInstall: false,
-                    runAtBoot: false,
-                }
-            }));
-        }
-    }, applications.data)
-
     const handleSearch = () => {
-        
+
     }
 
     const handleAddApplication = () => {
         setShowAddApplication(true);
+    }
+
+    const handleSubmit = (appConfig) => {
+        setApplicationConfigs((prev) => {
+            let newConfigs = [...prev];
+            let index = newConfigs.findIndex((config) => config.application._id === appConfig.application._id);
+            if (index !== -1) {
+                newConfigs[index] = appConfig;
+            } else {
+                newConfigs.push(appConfig);
+            }
+            return newConfigs;
+        });
+        setShowAddApplication(false);
+    }
+
+    const renderComboBoxField = (style, options, value, onChange) => {
+        return (
+            <div className={styles.inputContainer} style={style}>
+                <div className={styles.inputContainerBorder} style={{ flex: 1, height: "100%", display: "flex", alignItems: "center" }}>
+                    <select
+                        className={styles.input}
+                        value={value}
+                        onChange={onChange}
+                    >
+                        {options.map((option) => (
+                            <option key={option.value} value={option.value}>
+                                {option.label}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+            </div>
+        );
     }
 
     const filteredApplications = applicationConfigs.filter((appConfig) => {
@@ -89,43 +96,26 @@ export default function Applications({ configuration }) {
                 <button className={styles.searchButton} onClick={handleAddApplication}>Thêm</button>
             </div>
             {
-                !applications.isLoading && filteredApplications.length > 0 && (
+                (
                     <>
-                        <div className={styles.filterContainer}>
-                            <div className={styles.filter}>
-                                <input
-                                    type="checkbox"
-                                    className={styles.checkbox}
-                                    checked={showSystemApps}
-                                    onChange={(e) => setShowSystemApps(e.target.checked)}
-                                />
-                                <label>Hiện ứng dụng hệ thống</label>
-                            </div>
-                            {/* <div className={styles.filter}>
-                                <input
-                                    type="checkbox"
-                                    className={styles.checkbox}
-                                    checked={displayMyApplicationsOnly}
-                                    onChange={(e) => setDisplayMyApplicationsOnly(e.target.checked)}
-                                />
-                                <label>Chỉ hiện ứng dụng của tôi</label>
-                            </div> */}
-                        </div>
                         <div className={styles.configTable}>
                             <table>
                                 <thead>
                                     <tr>
                                         <th>Tên ứng dụng</th>
                                         <th>Phiên bản</th>
-                                        <th>Đường dẫn</th>
-                                        <th>Icon</th>
                                         <th>Hành động</th>
+                                        <th>Icon</th>
+                                        <th>Thứ tự hiển thị</th>
+                                        <th>Mở khi cài đặt</th>
+                                        <th>Mở khi khởi động máy</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {
                                         filteredApplications.map((appConfig) => {
                                             let app = appConfig.application;
+                                            console.log(appConfig);
                                             return (
                                                 <tr key={app.id}>
                                                     <td>
@@ -135,12 +125,110 @@ export default function Applications({ configuration }) {
                                                         </div>
                                                     </td>
                                                     <td>{appConfig.version.versionName}</td>
-                                                    <td>{appConfig.version.url ?? ""}</td>
-                                                    <td>{app.showIcon ? "+" : ""}</td>
-                                                    <td className={styles.actions}>
-                                                        <button className={styles.edit}>Phiên bản</button>
-                                                        <button className={styles.copy}>Sửa</button>
-                                                        <button className={styles.delete}>Xóa</button>
+                                                    <td>
+                                                        {
+                                                            renderComboBoxField(
+                                                                appConfig.application.isSystemApp ? { display: "none" } : {},
+                                                                [
+                                                                    {
+                                                                        label: "Cài đặt",
+                                                                        value: "install",
+                                                                    },
+                                                                    {
+                                                                        label: "Gỡ cài đặt",
+                                                                        value: "uninstall",
+                                                                    },
+                                                                ],
+                                                                appConfig.remove ? "uninstall" : "install",
+                                                                e => {
+                                                                    let newConfigs = [...applicationConfigs];
+                                                                    let index = newConfigs.findIndex((config) => config.application._id === appConfig.application._id);
+                                                                    if (index !== -1) {
+                                                                        newConfigs[index].remove = e.target.value === "uninstall";
+                                                                        setApplicationConfigs(newConfigs);
+                                                                    }
+                                                                }
+                                                            )
+                                                        }
+                                                    </td>
+                                                    <td>
+                                                        {
+                                                            renderComboBoxField(
+                                                                {},
+                                                                [
+                                                                    {
+                                                                        label: "Hiển thị",
+                                                                        value: true,
+                                                                    },
+                                                                    {
+                                                                        label: "Ẩn",
+                                                                        value: false,
+                                                                    },
+                                                                ],
+                                                                appConfig.showIcon,
+                                                                e => {
+                                                                    let newConfigs = [...applicationConfigs];
+                                                                    let index = newConfigs.findIndex((config) => config.application._id === appConfig.application._id);
+                                                                    if (index !== -1) {
+                                                                        newConfigs[index].showIcon = e.target.value === "true";
+                                                                        setApplicationConfigs(newConfigs);
+                                                                    }
+                                                                }
+                                                            )
+                                                        }
+                                                    </td>
+                                                    <td>
+                                                        <div className={styles.inputContainer} style={appConfig.showIcon ? {} : { display: "none" }}>
+                                                            <div className={styles.inputContainerBorder} style={{ flex: 1, height: "100%", display: "flex", alignItems: "center" }}>
+                                                                <input
+                                                                    className={styles.input}
+                                                                    type="number"
+                                                                    value={appConfig.screenOrder || 0}
+                                                                    onChange={(e) => {
+                                                                        const newConfigs = [...applicationConfigs];
+                                                                        const index = newConfigs.findIndex((config) => config.application._id === appConfig.application._id);
+                                                                        if (index !== -1) {
+                                                                            newConfigs[index].screenOrder = parseInt(e.target.value) || 0;
+                                                                            setApplicationConfigs(newConfigs);
+                                                                        }
+                                                                    }}
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div className={styles.inputContainer}>
+                                                            <input
+                                                                type="checkbox"
+                                                                className={styles.checkBox}
+                                                                checked={appConfig.runAfterInstall}
+                                                                onChange={(e) => {
+                                                                    const newConfigs = [...applicationConfigs];
+                                                                    const index = newConfigs.findIndex((config) => config.application._id === appConfig.application._id);
+                                                                    if (index !== -1) {
+                                                                        newConfigs[index].runAfterInstall = e.target.checked;
+                                                                        setApplicationConfigs(newConfigs);
+                                                                    }
+                                                                }}
+                                                            />
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div className={styles.inputContainer}>
+                                                            <input
+                                                                type="checkbox"
+                                                                className={styles.checkBox}
+                                                                checked={appConfig.runAtBoot}
+                                                                onChange={(e) => {
+                                                                    const newConfigs = [...applicationConfigs];
+                                                                    const index = newConfigs.findIndex((config) => config.application._id === appConfig.application._id);
+                                                                    if (index !== -1) {
+                                                                        newConfigs[index].runAtBoot = e.target.checked;
+                                                                        setApplicationConfigs(newConfigs);
+                                                                    }
+                                                                }}
+                                                            />
+                                                        </div>
                                                     </td>
                                                 </tr>
                                             )
@@ -153,28 +241,13 @@ export default function Applications({ configuration }) {
                 )
             }
             {
-                filteredApplications.length === 0 && !applications.isLoading && (
-                    <span className={styles.noData}>Không cấu hình nào được tìm thấy</span>
-                )
-            }
-            {
-                applications.isLoading && (
-                    <div className={styles.loading}>
-                        <Loader color="#535353" width="35px" />
-                        <span className={styles.loadingText} >Đang tải dữ liệu...</span>
-                    </div>
-                )
-            }
-            {
-                applications.errorMessage && !applications.isLoading && (
-                    <div className={styles.error}>
-                        <span className={styles.errorText}>{applications.errorMessage}</span>
-                    </div>
-                )
-            }
-            {
                 showAddApplication && (
-                    <AddApplicationConfigDialog configuration={configuration} isOpen={showAddApplication} onClose={() => setShowAddApplication(false)} />
+                    <AddApplicationConfigDialog
+                        configuration={configuration}
+                        isOpen={showAddApplication}
+                        onClose={() => setShowAddApplication(false)}
+                        onSubmit={handleSubmit}
+                    />
                 )
             }
         </div>
