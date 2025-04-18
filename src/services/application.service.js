@@ -44,6 +44,10 @@ class ApplicationService {
     async deleteApkVersion(data) {
         return axiosApiInstance.post(API_URL + "delete-apk-version", data);
     }
+
+    async getAvailableApplicationForConfig(data) {
+        return axiosApiInstance.post(API_URL + "get-available-application-for-config", data);
+    }
 }
 
 export default new ApplicationService();

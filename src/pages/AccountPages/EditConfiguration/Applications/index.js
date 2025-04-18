@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import styles from "./applications.module.scss";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
 import { fetchApplications, selectApplications } from "../../../../slices/application.slice";
 import Loader from "../../../../components/Loader";
+import AddApplicationConfigDialog from "../../../../parts/AddApplicationConfigDialog";
 
-export default function Applications() {
+export default function Applications({ configuration }) {
     const dispatch = useDispatch();
     const applications = useSelector(selectApplications);
 
@@ -13,6 +13,8 @@ export default function Applications() {
     const [searchTerm, setSearchTerm] = useState("");
     const [showSystemApps, setShowSystemApps] = useState(false);
     const [displayMyApplicationsOnly, setDisplayMyApplicationsOnly] = useState(false);
+
+    const [showAddApplication, setShowAddApplication] = useState(false);
 
     useEffect(() => {
         // Fetch applications from the server
@@ -46,6 +48,10 @@ export default function Applications() {
         
     }
 
+    const handleAddApplication = () => {
+        setShowAddApplication(true);
+    }
+
     const filteredApplications = applicationConfigs.filter((appConfig) => {
         let app = appConfig.application;
         if (displayMyApplicationsOnly) {
@@ -65,7 +71,7 @@ export default function Applications() {
         if (searchTerm === "") {
             return true;
         } else {
-            return app.name.toLowerCase().includes(searchTerm.toLowerCase()) || app.pkg.toLowerCase().includes(searchTerm.toLowerCase());
+            return app.application.name.toLowerCase().includes(searchTerm.toLowerCase()) || app.application.pkg.toLowerCase().includes(searchTerm.toLowerCase());
         }
     })
 
@@ -80,6 +86,7 @@ export default function Applications() {
                     value={searchTerm}
                 />
                 <button className={styles.searchButton} onClick={handleSearch}>Tìm kiếm</button>
+                <button className={styles.searchButton} onClick={handleAddApplication}>Thêm</button>
             </div>
             {
                 !applications.isLoading && filteredApplications.length > 0 && (
@@ -108,7 +115,6 @@ export default function Applications() {
                             <table>
                                 <thead>
                                     <tr>
-                                        <th>Package</th>
                                         <th>Tên ứng dụng</th>
                                         <th>Phiên bản</th>
                                         <th>Đường dẫn</th>
@@ -122,8 +128,12 @@ export default function Applications() {
                                             let app = appConfig.application;
                                             return (
                                                 <tr key={app.id}>
-                                                    <td>{app.pkg}</td>
-                                                    <td>{app.name}</td>
+                                                    <td>
+                                                        <div className={styles.appInfo}>
+                                                            <label>{app.name}</label>
+                                                            <label>{app.pkg}</label>
+                                                        </div>
+                                                    </td>
                                                     <td>{appConfig.version.versionName}</td>
                                                     <td>{appConfig.version.url ?? ""}</td>
                                                     <td>{app.showIcon ? "+" : ""}</td>
@@ -160,6 +170,11 @@ export default function Applications() {
                     <div className={styles.error}>
                         <span className={styles.errorText}>{applications.errorMessage}</span>
                     </div>
+                )
+            }
+            {
+                showAddApplication && (
+                    <AddApplicationConfigDialog configuration={configuration} isOpen={showAddApplication} onClose={() => setShowAddApplication(false)} />
                 )
             }
         </div>

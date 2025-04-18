@@ -61,7 +61,7 @@ export default function EditConfiguration() {
             case "design":
                 return <DesignSettings />;
             case "apps":
-                return <Applications />;
+                return <Applications configuration={configuration} />;
             case "mdm":
                 return <div>MDM Settings Component</div>;
             case "app-settings":
