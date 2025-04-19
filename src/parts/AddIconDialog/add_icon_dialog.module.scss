@@ -1,3 +1,17 @@
+@keyframes backDropSlideUpFadeOut {
+    0% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+.dialogBackdropExit {
+    animation: backDropSlideUpFadeOut 0.5s ease-in forwards;
+}
+
 .dialogBackdrop {
     position: fixed;
     top: 0;
@@ -10,6 +24,38 @@
     justify-content: center;
     padding-top: 24px;
     z-index: 1000;
+}
+
+@keyframes slideDownScale {
+    0% {
+        opacity: 0;
+        transform: translateY(-40px) scale(0.9);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes slideUpFadeOut {
+    0% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateY(-40px) scale(0.9);
+    }
+}
+
+.dialogEnter {
+    animation: slideDownScale 0.3s ease-out forwards;
+}
+
+.dialogExit {
+    animation: slideUpFadeOut 0.2s ease-in forwards;
 }
 
 .dialog {

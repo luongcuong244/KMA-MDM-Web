@@ -34,9 +34,9 @@ export default function Applications({ configuration }) {
             } else {
                 newConfigs.push(appConfig);
             }
+            configuration.applications = newConfigs;
             return newConfigs;
         });
-        setShowAddApplication(false);
     }
 
     const renderComboBoxField = (style, options, value, onChange) => {
@@ -57,6 +57,11 @@ export default function Applications({ configuration }) {
                 </div>
             </div>
         );
+    }
+
+    const updateApplicationConfigs = (newConfigs) => {
+        setApplicationConfigs(newConfigs);
+        configuration.applications = newConfigs;
     }
 
     const filteredApplications = applicationConfigs.filter((appConfig) => {
@@ -145,7 +150,7 @@ export default function Applications({ configuration }) {
                                                                     let index = newConfigs.findIndex((config) => config.application._id === appConfig.application._id);
                                                                     if (index !== -1) {
                                                                         newConfigs[index].remove = e.target.value === "uninstall";
-                                                                        setApplicationConfigs(newConfigs);
+                                                                        updateApplicationConfigs(newConfigs);
                                                                     }
                                                                 }
                                                             )
@@ -171,7 +176,7 @@ export default function Applications({ configuration }) {
                                                                     let index = newConfigs.findIndex((config) => config.application._id === appConfig.application._id);
                                                                     if (index !== -1) {
                                                                         newConfigs[index].showIcon = e.target.value === "true";
-                                                                        setApplicationConfigs(newConfigs);
+                                                                        updateApplicationConfigs(newConfigs);
                                                                     }
                                                                 }
                                                             )
@@ -189,7 +194,7 @@ export default function Applications({ configuration }) {
                                                                         const index = newConfigs.findIndex((config) => config.application._id === appConfig.application._id);
                                                                         if (index !== -1) {
                                                                             newConfigs[index].screenOrder = parseInt(e.target.value) || 0;
-                                                                            setApplicationConfigs(newConfigs);
+                                                                            updateApplicationConfigs(newConfigs);
                                                                         }
                                                                     }}
                                                                 />
@@ -207,7 +212,7 @@ export default function Applications({ configuration }) {
                                                                     const index = newConfigs.findIndex((config) => config.application._id === appConfig.application._id);
                                                                     if (index !== -1) {
                                                                         newConfigs[index].runAfterInstall = e.target.checked;
-                                                                        setApplicationConfigs(newConfigs);
+                                                                        updateApplicationConfigs(newConfigs);
                                                                     }
                                                                 }}
                                                             />
@@ -224,7 +229,7 @@ export default function Applications({ configuration }) {
                                                                     const index = newConfigs.findIndex((config) => config.application._id === appConfig.application._id);
                                                                     if (index !== -1) {
                                                                         newConfigs[index].runAtBoot = e.target.checked;
-                                                                        setApplicationConfigs(newConfigs);
+                                                                        updateApplicationConfigs(newConfigs);
                                                                     }
                                                                 }}
                                                             />

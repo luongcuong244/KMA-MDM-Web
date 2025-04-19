@@ -148,6 +148,10 @@ input:focus {
   background-image: linear-gradient(315deg, #696ac1 30%, #5c8fb0 74%);
 }
 
+label {
+  margin-bottom: 0px;
+}
+
 /* @media screen and (max-width: 1000px) {
   html {
     display: none;

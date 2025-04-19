@@ -6,6 +6,8 @@ import clsx from "clsx";
 import CommonSettings from "./CommonSettings";
 import DesignSettings from "./DesignSettings";
 import Applications from "./Applications";
+import MdmSettings from "./MdmSettings";
+import ApplicationSettings from "./ApplicationSettings";
 
 export default function EditConfiguration() {
     const { id } = useParams();
@@ -17,8 +19,8 @@ export default function EditConfiguration() {
     const commonTab = useMemo(() => <CommonSettings />, []);
     const designTab = useMemo(() => <DesignSettings />, []);
     const appsTab = useMemo(() => <Applications configuration={configuration} />, [configuration]);
-    const mdmTab = useMemo(() => <div>MDM Settings Component</div>, []);
-    const appSettingsTab = useMemo(() => <div>Application Settings Component</div>, []);
+    const mdmTab = useMemo(() => <MdmSettings configuration={configuration} />, [configuration]);
+    const appSettingsTab = useMemo(() => <ApplicationSettings configuration={configuration} />, [configuration]);
     const filesTab = useMemo(() => <div>Files Component</div>, []);
 
     useEffect(() => {
@@ -59,25 +61,6 @@ export default function EditConfiguration() {
                 </div>
             </li>
         );
-    };
-
-    const renderTabContent = () => {
-        switch (activeTab) {
-            case "common":
-                return <CommonSettings />;
-            case "design":
-                return <DesignSettings />;
-            case "apps":
-                return <Applications configuration={configuration} />;
-            case "mdm":
-                return <div>MDM Settings Component</div>;
-            case "app-settings":
-                return <div>Application Settings Component</div>;
-            case "files":
-                return <div>Files Component</div>;
-            default:
-                return null;
-        }
     };
 
     return (

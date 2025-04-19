@@ -91,16 +91,12 @@
 
         th:nth-child(1),
         td:nth-child(1) {
-            width: 30%;
+            width: 20%;
         }
 
-        // th:nth-child(2),
-        // td:nth-child(2) {
-        //     width: 7%;
-        // }
-
+        th:nth-child(2),
         td:nth-child(2) {
-            color: #337ab7;
+            width: 14%;
         }
 
         th:nth-child(3),
@@ -110,18 +106,12 @@
 
         th:nth-child(4),
         td:nth-child(4) {
-            width: 10%;
-        }
-
-        th:nth-child(5),
-        td:nth-child(5) {
-            width: 15%;
+            width: 20%;
         }
 
         th:nth-child(6),
         td:nth-child(6) {
-            white-space: nowrap;
-            width: 1%; // trick để fit-content
+            width: 13%;
         }
 
         th:nth-child(7),
@@ -253,4 +243,21 @@
     height: 30px;
     margin-left: 16px;
     cursor: pointer;
+}
+
+.signInButton {
+    width: 40px;
+    height: 28px;
+    color: #333;
+    border-radius: 4px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    &:hover {
+        background-color: #f6f8fc;
+        border-color: #535353;
+    }
 }

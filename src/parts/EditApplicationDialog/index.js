@@ -5,6 +5,7 @@ import applicationService from "../../services/application.service";
 import AddIconDialog from "../AddIconDialog";
 
 const EditApplicationDialog = ({ isOpen, onClose, onSubmit, application }) => {
+    const [isExiting, setIsExiting] = useState(false);
     const [error, setError] = useState("");
     const [packageName, setPackageName] = useState(application.pkg ?? "");
     const [appName, setAppName] = useState(application.name ?? "");
@@ -72,7 +73,10 @@ const EditApplicationDialog = ({ isOpen, onClose, onSubmit, application }) => {
     };
 
     const handleClose = () => {
-        onClose();
+        setIsExiting(true);
+        setTimeout(() => {
+            onClose();
+        }, 500);
     }
 
     const handleAddNewIcon = (icon) => {
@@ -172,8 +176,8 @@ const EditApplicationDialog = ({ isOpen, onClose, onSubmit, application }) => {
     };
 
     return (
-        <div className={styles.dialogBackdrop}>
-            <div className={styles.dialog}>
+        <div className={clsx(styles.dialogBackdrop, isExiting && styles.dialogBackdropExit)}>
+            <div className={clsx(styles.dialog, isExiting ? styles.dialogExit : styles.dialogEnter)}>
                 <label className={styles.title}>Sửa ứng dụng</label>
                 {
                     error && <label className={styles.error}>{error}</label>

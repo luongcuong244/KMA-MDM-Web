@@ -4,6 +4,7 @@ import clsx from "clsx";
 import applicationService from "../../services/application.service";
 
 const AddApplicationConfigDialog = ({ configuration, isOpen, onClose, onSubmit }) => {
+    const [isExiting, setIsExiting] = useState(false);
     const [error, setError] = useState("");
     const [applications, setApplications] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
@@ -69,10 +70,14 @@ const AddApplicationConfigDialog = ({ configuration, isOpen, onClose, onSubmit }
             runAfterInstall: false,
             runAtBoot: false,
         })
+        handleClose();
     };
 
     const handleClose = () => {
-        onClose();
+        setIsExiting(true);
+        setTimeout(() => {
+            onClose();
+        }, 500);
     }
 
     const renderComboBoxField = (label, options, value, onChange) => {
@@ -99,8 +104,8 @@ const AddApplicationConfigDialog = ({ configuration, isOpen, onClose, onSubmit }
     }
 
     return (
-        <div className={styles.dialogBackdrop}>
-            <div className={styles.dialog}>
+        <div className={clsx(styles.dialogBackdrop, isExiting && styles.dialogBackdropExit)}>
+            <div className={clsx(styles.dialog, isExiting ? styles.dialogExit : styles.dialogEnter)}>
                 {
                     error && <label className={styles.error}>{error}</label>
                 }
@@ -121,7 +126,7 @@ const AddApplicationConfigDialog = ({ configuration, isOpen, onClose, onSubmit }
                         <input
                             type="text"
                             className={styles.input}
-                            placeholder="Nhập tên ứng dụng..."
+                            placeholder="Tìm và chọn ứng dụng..."
                             value={searchTerm}
                             onChange={(e) => {
                                 setSelectedApp(null);

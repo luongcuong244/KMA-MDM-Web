@@ -5,6 +5,7 @@ import fileService from "../../services/file.service";
 import applicationService from "../../services/application.service";
 
 const AddApplicationVersionDialog = ({ isOpen, onClose, onSubmit, packageName }) => {
+    const [isExiting, setIsExiting] = useState(false);
     const [error, setError] = useState("");
     const [apkFileName, setApkFileName] = useState("");
     const [apkUploadData, setApkUploadData] = useState(null);
@@ -45,10 +46,12 @@ const AddApplicationVersionDialog = ({ isOpen, onClose, onSubmit, packageName })
             fileService.cancelUpload(apkUploadData.data.serverPath)
                 .catch((error) => {
                     console.error("Error canceling upload:", error);
-                    setError("Error canceling upload");
                 });
         }
-        onClose();
+        setIsExiting(true);
+        setTimeout(() => {
+            onClose();
+        }, 500);
     }
 
     const handleClearFile = () => {
@@ -137,8 +140,8 @@ const AddApplicationVersionDialog = ({ isOpen, onClose, onSubmit, packageName })
     };
 
     return (
-        <div className={styles.dialogBackdrop}>
-            <div className={styles.dialog}>
+        <div className={clsx(styles.dialogBackdrop, isExiting && styles.dialogBackdropExit)}>
+            <div className={clsx(styles.dialog, isExiting ? styles.dialogExit : styles.dialogEnter)}>
                 <label className={styles.title}>Thêm phiên bản</label>
                 {
                     error && <label className={styles.error}>{error}</label>

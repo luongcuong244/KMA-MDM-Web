@@ -5,6 +5,7 @@ import fileService from "../../services/file.service";
 import applicationService from "../../services/application.service";
 
 const AddIconDialog = ({ isOpen, onClose, onSubmit }) => {
+    const [isExiting, setIsExiting] = useState(false);
     const [error, setError] = useState("");
     const [fileName, setFileName] = useState("");
     const [uploadData, setUploadData] = useState(null);
@@ -43,10 +44,12 @@ const AddIconDialog = ({ isOpen, onClose, onSubmit }) => {
             fileService.cancelUpload(uploadData.serverPath)
                 .catch((error) => {
                     console.error("Error canceling upload:", error);
-                    setError("Error canceling upload");
                 });
         }
-        onClose();
+        setIsExiting(true);
+        setTimeout(() => {
+            onClose();
+        }, 500);
     }
 
     const handleClearFile = () => {
@@ -157,8 +160,8 @@ const AddIconDialog = ({ isOpen, onClose, onSubmit }) => {
     };
 
     return (
-        <div className={styles.dialogBackdrop}>
-            <div className={styles.dialog}>
+        <div className={clsx(styles.dialogBackdrop, isExiting && styles.dialogBackdropExit)}>
+            <div className={clsx(styles.dialog, isExiting ? styles.dialogExit : styles.dialogEnter)}>
                 <label className={styles.title}>Thêm icon</label>
                 {
                     error && <label className={styles.error}>{error}</label>

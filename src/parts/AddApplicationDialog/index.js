@@ -6,6 +6,7 @@ import applicationService from "../../services/application.service";
 import AddIconDialog from "../AddIconDialog";
 
 const AddApplicationDialog = ({ isOpen, onClose, onSubmit }) => {
+    const [isExiting, setIsExiting] = useState(false);
     const [error, setError] = useState("");
     const [apkFileName, setApkFileName] = useState("");
     const [apkUploadData, setApkUploadData] = useState(null);
@@ -87,10 +88,12 @@ const AddApplicationDialog = ({ isOpen, onClose, onSubmit }) => {
             fileService.cancelUpload(apkUploadData.data.serverPath)
                 .catch((error) => {
                     console.error("Error canceling upload:", error);
-                    setError("Error canceling upload");
                 });
         }
-        onClose();
+        setIsExiting(true);
+        setTimeout(() => {
+            onClose();
+        }, 500);
     }
 
     const handleClearApkFile = () => {
@@ -223,8 +226,8 @@ const AddApplicationDialog = ({ isOpen, onClose, onSubmit }) => {
     }
 
     return (
-        <div className={styles.dialogBackdrop}>
-            <div className={styles.dialog}>
+        <div className={clsx(styles.dialogBackdrop, isExiting && styles.dialogBackdropExit)}>
+            <div className={clsx(styles.dialog, isExiting ? styles.dialogExit : styles.dialogEnter)}>
                 <label className={styles.title}>Thêm ứng dụng</label>
                 {
                     error && <label className={styles.error}>{error}</label>
