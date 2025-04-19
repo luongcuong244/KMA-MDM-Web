@@ -1,24 +1,37 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styles from "./mdm_settings.module.scss";
 import clsx from "clsx";
 
 export default function MdmSettings({ configuration }) {
-    const [kioskMode, setKiosMode] = React.useState(false);
+    const [kioskMode, setKiosMode] = React.useState(configuration.kioskMode || false);
 
-    const [mdmApp, setMdmApp] = React.useState(null);
-    const [searchTermMdmApp, setSearchTermMdmApp] = React.useState("");
+    const [mdmApp, setMdmApp] = React.useState(configuration.mdmApp || null);
+    const [searchTermMdmApp, setSearchTermMdmApp] = React.useState(configuration.mdmApp || "");
     const [showDropdownMdmApp, setShowDropdownMdmApp] = React.useState(false);
 
-    const [adminReceiverClass, setAdminReceiverClass] = React.useState("");
+    const [adminReceiverClass, setAdminReceiverClass] = React.useState(configuration.adminReceiverClass || "");
 
     const [selectedKioskApps, setSelectedKioskApps] = React.useState([]);
     const [searchTermKioskApp, setSearchTermKioskApp] = React.useState("");
     const [showDropdownKisokApp, setShowDropdownKisokApp] = React.useState(false);
 
-    const [showKioskExitButton, setShowKioskExitButton] = React.useState(false);
-    const [lockThePowerButton, setLockThePowerButton] = React.useState(false);
-    const [wifiSSID, setWifiSSID] = React.useState("");
-    const [wifiPassword, setWifiPassword] = React.useState("");
+    const [showKioskExitButton, setShowKioskExitButton] = React.useState(configuration.showKioskExitButton || false);
+    const [lockThePowerButton, setLockThePowerButton] = React.useState(configuration.lockThePowerButton || false);
+    const [wifiSSID, setWifiSSID] = React.useState(configuration.wifiSSID || "");
+    const [wifiPassword, setWifiPassword] = React.useState(configuration.wifiPassword || "");
+    const [restrictions, setRestrictions] = React.useState(configuration.restrictions || "");
+
+    useEffect(() => {
+        if (configuration.kioskApps) {
+            setSelectedKioskApps(
+                configuration.applications
+                    .map((appConfig) => appConfig.application)
+                    .filter(app => app && configuration.kioskApps.includes(app.pkg))
+            );
+        }
+    }, []);
+
+    console.log("MdmSettings configuration", configuration);
 
     const renderTextInputField = (type, label, placeholder, value, onChange, disable, showPassword, onClickEyeButton) => {
         return (
@@ -258,7 +271,10 @@ export default function MdmSettings({ configuration }) {
                 renderCheckboxField(
                     "Chế độ Kiosk",
                     kioskMode,
-                    (e) => setKiosMode(e.target.checked)
+                    (e) => {
+                        setKiosMode(e.target.checked);
+                        configuration.kioskMode = e.target.checked;
+                    }
                 )
             }
             {
@@ -268,6 +284,8 @@ export default function MdmSettings({ configuration }) {
                     searchTermMdmApp,
                     (e) => {
                         setMdmApp(null);
+                        configuration.mdmApp = null;
+
                         setShowDropdownMdmApp(true);
                         setSearchTermMdmApp(e.target.value);
                     },
@@ -275,7 +293,9 @@ export default function MdmSettings({ configuration }) {
                     showDropdownMdmApp,
                     searchTermMdmApp,
                     (app) => {
-                        setMdmApp(app);
+                        setMdmApp(app.pkg);
+                        configuration.mdmApp = app.pkg;
+
                         setSearchTermMdmApp(app.name);
                         setShowDropdownMdmApp(false);
                     }
@@ -287,7 +307,10 @@ export default function MdmSettings({ configuration }) {
                     "Admin Receiver Class",
                     "Nhập admin receiver class",
                     adminReceiverClass,
-                    (e) => setAdminReceiverClass(e.target.value),
+                    (e) => {
+                        setAdminReceiverClass(e.target.value);
+                        configuration.adminReceiverClass = e.target.value;
+                    },
                     false
                 )
             }
@@ -304,11 +327,14 @@ export default function MdmSettings({ configuration }) {
                     showDropdownKisokApp,
                     (app) => {
                         setSelectedKioskApps([...selectedKioskApps, app]);
+                        configuration.kioskApps = [...selectedKioskApps, app].map(app => app.pkg);
+
                         setSearchTermKioskApp("");
                         setShowDropdownKisokApp(false);
                     },
                     (appToRemove) => {
                         setSelectedKioskApps(selectedKioskApps.filter(app => app.pkg !== appToRemove.pkg));
+                        configuration.kioskApps = selectedKioskApps.filter(app => app.pkg !== appToRemove.pkg).map(app => app.pkg);
                     }
                 )
             }
@@ -316,14 +342,20 @@ export default function MdmSettings({ configuration }) {
                 kioskMode && renderCheckboxField(
                     "Hiện nút thoát chế độ kiosk",
                     showKioskExitButton,
-                    (e) => setShowKioskExitButton(e.target.checked)
+                    (e) => {
+                        setShowKioskExitButton(e.target.checked);
+                        configuration.showKioskExitButton = e.target.checked;
+                    }
                 )
             }
             {
                 kioskMode && renderCheckboxField(
                     "Khóa nút nguồn",
                     lockThePowerButton,
-                    (e) => setLockThePowerButton(e.target.checked)
+                    (e) => {
+                        setLockThePowerButton(e.target.checked);
+                        configuration.lockThePowerButton = e.target.checked;
+                    }
                 )
             }
             {
@@ -332,7 +364,10 @@ export default function MdmSettings({ configuration }) {
                     "SSID Wi - Fi",
                     "Nhập ssid wifi - bỏ trống nếu nhập thủ công",
                     wifiSSID,
-                    (e) => setWifiSSID(e.target.value),
+                    (e) => {
+                        setWifiSSID(e.target.value);
+                        configuration.wifiSSID = e.target.value;
+                    },
                     false
                 )
             }
@@ -342,7 +377,10 @@ export default function MdmSettings({ configuration }) {
                     "Mật khẩu Wifi",
                     "Nhập mật khẩu wifi - bỏ trống nếu nhập thủ công",
                     wifiPassword,
-                    (e) => setWifiPassword(e.target.value),
+                    (e) => {
+                        setWifiPassword(e.target.value);
+                        configuration.wifiPassword = e.target.value;
+                    },
                     false
                 )
             }
@@ -362,8 +400,11 @@ export default function MdmSettings({ configuration }) {
                             type="text"
                             className={styles.input}
                             placeholder={"Là các User Restriction trong android, ngăn cách bởi dấu phẩy, ví dụ: no_sms,no_outgoing_calls,no_uninstall_apps,..."}
-                            value={wifiPassword}
-                            onChange={(e) => setWifiPassword(e.target.value)}
+                            value={restrictions}
+                            onChange={(e) => {
+                                setRestrictions(e.target.value);
+                                configuration.restrictions = e.target.value;
+                            }}
                         />
                     </div>
                 </div>

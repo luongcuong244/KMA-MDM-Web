@@ -20,6 +20,10 @@ class ConfigurationService {
             },
         });
     }
+
+    async saveConfiguration(data) {
+        return axiosApiInstance.post(API_URL + "save-configuration", data);
+    }
 }
 
 export default new ConfigurationService();

@@ -17,6 +17,8 @@ export default function ApplicationSettings({ configuration }) {
         }
     }, [])
 
+    console.log("Application Settings Configuration", configuration);
+
     const handleSearch = () => {
 
     }

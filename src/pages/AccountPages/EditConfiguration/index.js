@@ -11,13 +11,13 @@ import ApplicationSettings from "./ApplicationSettings";
 
 export default function EditConfiguration() {
     const { id } = useParams();
-    const [configuration, setConfiguration] = React.useState(null);
+    const [configuration, setConfiguration] = React.useState({});
     const [error, setError] = React.useState(null);
     const [loading, setLoading] = React.useState(true);
     const [activeTab, setActiveTab] = React.useState("common");
 
-    const commonTab = useMemo(() => <CommonSettings />, []);
-    const designTab = useMemo(() => <DesignSettings />, []);
+    const commonTab = useMemo(() => <CommonSettings configuration={configuration} />, [configuration]);
+    const designTab = useMemo(() => <DesignSettings configuration={configuration} />, [configuration]);
     const appsTab = useMemo(() => <Applications configuration={configuration} />, [configuration]);
     const mdmTab = useMemo(() => <MdmSettings configuration={configuration} />, [configuration]);
     const appSettingsTab = useMemo(() => <ApplicationSettings configuration={configuration} />, [configuration]);
@@ -63,6 +63,24 @@ export default function EditConfiguration() {
         );
     };
 
+    const clickSave = () => {
+        configurationService.saveConfiguration({
+            configuration: configuration,
+        }).then(() => {
+            window.history.back();
+        }).catch((error) => {
+            if (error.response) {
+                setError(error.response.data.message);
+            } else {
+                setError("An error occurred while saving the configuration.");
+            }
+        });
+    }
+
+    const clickBack = () => {
+        window.history.back();
+    }
+
     return (
         <div id={styles.root}>
             {
@@ -104,6 +122,10 @@ export default function EditConfiguration() {
                             <div style={{ display: activeTab === "files" ? "flex" : "none" }}>
                                 {filesTab}
                             </div>
+                        </div>
+                        <div className={styles.footer}>
+                            <button onClick={clickSave}>Lưu</button>
+                            <button onClick={clickBack}>Đóng</button>
                         </div>
                     </>
                 )

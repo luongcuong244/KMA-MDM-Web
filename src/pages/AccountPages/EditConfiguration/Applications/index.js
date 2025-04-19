@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import styles from "./applications.module.scss";
-import Loader from "../../../../components/Loader";
 import AddApplicationConfigDialog from "../../../../parts/AddApplicationConfigDialog";
 
 export default function Applications({ configuration }) {
@@ -10,6 +9,8 @@ export default function Applications({ configuration }) {
     const [displayMyApplicationsOnly, setDisplayMyApplicationsOnly] = useState(false);
 
     const [showAddApplication, setShowAddApplication] = useState(false);
+
+    console.log("Applications configuration", configuration);
 
     useEffect(() => {
         if (configuration) {

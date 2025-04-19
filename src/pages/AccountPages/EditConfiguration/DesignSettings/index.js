@@ -2,14 +2,16 @@ import React from "react";
 import styles from "./design_settings.module.scss";
 import clsx from "clsx";
 
-export default function DesignSettings() {
-    const [useDefaultDesign, setUseDefaultDesign] = React.useState(false);
-    const [backgroundColor, setBackgroundColor] = React.useState("#ffffff");
-    const [appNameColor, setAppNameColor] = React.useState("#000000");
-    const [backgroundImageUrl, setBackgroundImageUrl] = React.useState("");
-    const [iconSize, setIconSize] = React.useState("small");
-    const [lockOrientation, setLockOrientation] = React.useState("no");
-    const [displayTimeAndBatteryState, setDisplayTimeAndBatteryState] = React.useState(false);
+export default function DesignSettings({ configuration }) {
+    const [useDefaultDesign, setUseDefaultDesign] = React.useState(configuration.useDefaultDesign || false);
+    const [backgroundColor, setBackgroundColor] = React.useState(configuration.backgroundColor || "#FFFFFF");
+    const [appNameColor, setAppNameColor] = React.useState(configuration.textColor || "#000000");
+    const [backgroundImageUrl, setBackgroundImageUrl] = React.useState(configuration.backgroundImageUrl || "");
+    const [iconSize, setIconSize] = React.useState(configuration.iconSize || 100);
+    const [lockOrientation, setLockOrientation] = React.useState(configuration.orientation || 0);
+    const [displayTimeAndBatteryState, setDisplayTimeAndBatteryState] = React.useState(configuration.displayTimeAndBatteryState || false);
+
+    console.log("DesignSettings configuration", configuration);
 
     const renderTextInputField = (type, label, placeholder, value, onChange, disable, showPassword, onClickEyeButton) => {
         return (
@@ -112,7 +114,10 @@ export default function DesignSettings() {
                 renderCheckboxField(
                     "Sử dụng mặc định",
                     useDefaultDesign,
-                    (e) => setUseDefaultDesign(e.target.checked),
+                    (e) => {
+                        setUseDefaultDesign(e.target.checked);
+                        configuration.useDefaultDesign = e.target.checked;
+                    },
                     false,
                 )
             }
@@ -122,7 +127,10 @@ export default function DesignSettings() {
                     "Màu nền",
                     "Nhập màu nền",
                     backgroundColor,
-                    (e) => setBackgroundColor(e.target.value),
+                    (e) => {
+                        setBackgroundColor(e.target.value);
+                        configuration.backgroundColor = e.target.value;
+                    },
                     useDefaultDesign
                 )
             }
@@ -132,7 +140,10 @@ export default function DesignSettings() {
                     "Màu tên ứng dụng",
                     "Nhập màu tên ứng dụng",
                     appNameColor,
-                    (e) => setAppNameColor(e.target.value),
+                    (e) => {
+                        setAppNameColor(e.target.value);
+                        configuration.textColor = e.target.value;
+                    },
                     useDefaultDesign
                 )
             }
@@ -142,7 +153,10 @@ export default function DesignSettings() {
                     "Hình nền",
                     "Nhập URL hình nền",
                     backgroundImageUrl,
-                    (e) => setBackgroundImageUrl(e.target.value),
+                    (e) => {
+                        setBackgroundImageUrl(e.target.value);
+                        configuration.backgroundImageUrl = e.target.value;
+                    },
                     useDefaultDesign
                 )
             }
@@ -152,19 +166,22 @@ export default function DesignSettings() {
                     [
                         {
                             label: "Nhỏ",
-                            value: "small",
+                            value: 100,
                         },
                         {
                             label: "Vừa (+ 20%)",
-                            value: "medium",
+                            value: 120,
                         },
                         {
                             label: "Lớn (+ 40%)",
-                            value: "large",
+                            value: 140,
                         }
                     ],
                     iconSize,
-                    e => setIconSize(e.target.value),
+                    e => {
+                        setIconSize(parseInt(e.target.value));
+                        configuration.iconSize = parseInt(e.target.value);
+                    },
                     useDefaultDesign
                 )
             }
@@ -174,19 +191,22 @@ export default function DesignSettings() {
                     [
                         {
                             label: "Không khoá",
-                            value: "no",
+                            value: 0,
                         },
                         {
                             label: "Khoá theo chiều dọc",
-                            value: "portrait",
+                            value: 1,
                         },
                         {
                             label: "Khoá theo chiều ngang",
-                            value: "landscape",
+                            value: 2,
                         }
                     ],
                     lockOrientation,
-                    e => setLockOrientation(e.target.value),
+                    e => {
+                        setLockOrientation(parseInt(e.target.value));
+                        configuration.orientation = parseInt(e.target.value);
+                    },
                     false
                 )
             }
@@ -194,7 +214,10 @@ export default function DesignSettings() {
                 renderCheckboxField(
                     "Hiển thị thời gian và trạng thái pin",
                     displayTimeAndBatteryState,
-                    (e) => setDisplayTimeAndBatteryState(e.target.checked),
+                    (e) => {
+                        setDisplayTimeAndBatteryState(e.target.checked);
+                        configuration.displayTimeAndBatteryState = e.target.checked;
+                    },
                     false
                 )
             }
