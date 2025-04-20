@@ -44,6 +44,7 @@
         height: 34px;
         display: flex;
         align-items: center;
+        position: relative;
     }
 
     .inputContainerRadio {
@@ -116,5 +117,13 @@
             background-color: #f6f8fc;
             border-color: #535353;
         }
+    }
+
+    .colorPickerContainer {
+        position: absolute;
+        top: 40px;
+        left: 0;
+        z-index: 1000;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     }
 }

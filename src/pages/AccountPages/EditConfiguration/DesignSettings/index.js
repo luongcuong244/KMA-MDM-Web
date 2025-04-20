@@ -1,17 +1,23 @@
 import React from "react";
 import styles from "./design_settings.module.scss";
 import clsx from "clsx";
+import { HexColorPicker } from "react-colorful";
 
 export default function DesignSettings({ configuration }) {
     const [useDefaultDesign, setUseDefaultDesign] = React.useState(configuration.useDefaultDesign || false);
     const [backgroundColor, setBackgroundColor] = React.useState(configuration.backgroundColor || "#FFFFFF");
+    const [showBackgroundColorPicker, setShowBackgroundColorPicker] = React.useState(false);
     const [appNameColor, setAppNameColor] = React.useState(configuration.textColor || "#000000");
+    const [showAppNameColorPicker, setShowAppNameColorPicker] = React.useState(false);
     const [backgroundImageUrl, setBackgroundImageUrl] = React.useState(configuration.backgroundImageUrl || "");
     const [iconSize, setIconSize] = React.useState(configuration.iconSize || 100);
     const [lockOrientation, setLockOrientation] = React.useState(configuration.orientation || 0);
     const [displayTimeAndBatteryState, setDisplayTimeAndBatteryState] = React.useState(configuration.displayTimeAndBatteryState || false);
 
     console.log("DesignSettings configuration", configuration);
+
+    const backgroundColorInputRef = React.useRef(null);
+    const appNameColorInputRef = React.useRef(null);
 
     const renderTextInputField = (type, label, placeholder, value, onChange, disable, showPassword, onClickEyeButton) => {
         return (
@@ -41,26 +47,49 @@ export default function DesignSettings({ configuration }) {
         );
     };
 
-    const renderRadioGroupField = (label, options, selectedValue, onChange) => {
+    const renderColorInputField = (label, placeholder, value, onChange, disable, showBackgroundColorPicker, setShowBackgroundColorPicker, inputRef) => {
+        let keepFocus = false;
         return (
             <div className={styles.field}>
                 <label className={styles.label}>{label}</label>
-                <div className={clsx(styles.inputContainerRadio)}>
+                <div className={clsx(styles.inputContainer, styles.inputContainerBorder)}>
+                    <input
+                        ref={inputRef}
+                        type="text"
+                        className={styles.input}
+                        placeholder={placeholder}
+                        value={value}
+                        onChange={(e) => {
+                            if (e.target.value.length !== 7 || e.target.value[0] !== "#") {
+                                return;
+                            }
+                            onChange(e.target.value);
+                        }}
+                        disabled={disable}
+                        minLength={7}
+                        maxLength={7}
+                        onFocus={() => setShowBackgroundColorPicker(true)}
+                        onBlur={(e) => {
+                            // Delay một chút để chờ click hoàn tất
+                            setTimeout(() => {
+                                if (keepFocus) {
+                                    inputRef.current?.focus();
+                                } else {
+                                    setShowBackgroundColorPicker(false);
+                                }
+                            }, 0);
+                        }}
+                    />
                     {
-                        options.map((option) => {
-                            return <div className={styles.radioContainer}>
-                                <label className={styles.radioLabel}>{option}</label>
-                                <input
-                                    key={option.value}
-                                    type="radio"
-                                    className={styles.radioInput}
-                                    name={label}
-                                    value={option}
-                                    checked={selectedValue === option}
-                                    onChange={onChange}
-                                />
-                            </div>
-                        })
+                        showBackgroundColorPicker &&
+                        <div className={styles.colorPickerContainer}>
+                            <HexColorPicker
+                                color={value}
+                                onChange={(value) => {
+                                    keepFocus = true;
+                                    onChange(value);
+                                }} />
+                        </div>
                     }
                 </div>
             </div>
@@ -122,29 +151,33 @@ export default function DesignSettings({ configuration }) {
                 )
             }
             {
-                renderTextInputField(
-                    "text",
+                renderColorInputField(
                     "Màu nền",
                     "Nhập màu nền",
                     backgroundColor,
-                    (e) => {
-                        setBackgroundColor(e.target.value);
-                        configuration.backgroundColor = e.target.value;
+                    (value) => {
+                        setBackgroundColor(value);
+                        configuration.backgroundColor = value;
                     },
-                    useDefaultDesign
+                    useDefaultDesign,
+                    showBackgroundColorPicker,
+                    setShowBackgroundColorPicker,
+                    backgroundColorInputRef,
                 )
             }
             {
-                renderTextInputField(
-                    "text",
+                renderColorInputField(
                     "Màu tên ứng dụng",
                     "Nhập màu tên ứng dụng",
                     appNameColor,
-                    (e) => {
-                        setAppNameColor(e.target.value);
-                        configuration.textColor = e.target.value;
+                    (value) => {
+                        setAppNameColor(value);
+                        configuration.textColor = value;
                     },
-                    useDefaultDesign
+                    useDefaultDesign,
+                    showAppNameColorPicker,
+                    setShowAppNameColorPicker,
+                    appNameColorInputRef,
                 )
             }
             {
@@ -155,7 +188,11 @@ export default function DesignSettings({ configuration }) {
                     backgroundImageUrl,
                     (e) => {
                         setBackgroundImageUrl(e.target.value);
-                        configuration.backgroundImageUrl = e.target.value;
+                        if (e.target.value) {
+                            configuration.backgroundImageUrl = e.target.value;
+                        } else {
+                            configuration.backgroundImageUrl = null;
+                        }
                     },
                     useDefaultDesign
                 )

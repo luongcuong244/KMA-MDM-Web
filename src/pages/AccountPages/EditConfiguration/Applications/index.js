@@ -13,7 +13,7 @@ export default function Applications({ configuration }) {
     console.log("Applications configuration", configuration);
 
     useEffect(() => {
-        if (configuration) {
+        if (configuration.applications) {
             setApplicationConfigs(configuration.applications);
         }
     }, [])

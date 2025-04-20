@@ -12,7 +12,7 @@ export default function ApplicationSettings({ configuration }) {
     const [appSettingToEdit, setAppSettingToEdit] = useState(null);
 
     useEffect(() => {
-        if (configuration) {
+        if (configuration.applicationSettings) {
             setApplicationSettings(configuration.applicationSettings);
         }
     }, [])

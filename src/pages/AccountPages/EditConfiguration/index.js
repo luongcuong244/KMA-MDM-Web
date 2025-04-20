@@ -33,12 +33,7 @@ export default function EditConfiguration() {
                 }
                 setError(null);
             })
-            .catch((error) => {
-                if (error.response) {
-                    setError(error.response.data.message);
-                } else {
-                    setError("An error occurred while fetching the application version.");
-                }
+            .catch((_) => {
             })
             .finally(() => {
                 setLoading(false);
@@ -64,6 +59,34 @@ export default function EditConfiguration() {
     };
 
     const clickSave = () => {
+        // check name
+        if (!configuration.name) {
+            setError("Tên cấu hình không được để trống");
+            setActiveTab("common");
+            return;
+        }
+        // check admin password
+        if (!configuration.adminPassword) {
+            setError("Mật khẩu quản trị viên không được để trống");
+            setActiveTab("common");
+            return;
+        }
+        if (!configuration.mdmApp) {
+            setError("Ứng dụng quản lý thiết bị không được để trống");
+            setActiveTab("mdm");
+            return;
+        }
+        if (!configuration.adminReceiverClass) {
+            setError("Admin Receiver Class không được để trống");
+            setActiveTab("mdm");
+            return;
+        }
+        if (configuration.kioskMode && (!configuration.kioskApps || configuration.kioskApps.length == 0)) {
+            setError("Chế độ Kiosk yêu cầu ít nhất một ứng dụng được chọn");
+            setActiveTab("mdm");
+            return;
+        }
+
         configurationService.saveConfiguration({
             configuration: configuration,
         }).then(() => {
@@ -91,13 +114,13 @@ export default function EditConfiguration() {
                 ) : null
             }
             {
-                !loading && !error && (
+                !loading && (
                     <>
                         <p className={styles.title}><p className={styles.subTitle}>Cấu hình </p>"{configuration?.name ?? ""}"</p>
                         <ul className={styles.navContainer}>
                             {NavItem("common", "Cài đặt chung")}
                             {NavItem("design", "Cài đặt giao diện")}
-                            {NavItem("apps", "Ứng dụng được phép")}
+                            {NavItem("apps", "Ứng dụng")}
                             {NavItem("mdm", "Cài đặt quản lý thiết bị")}
                             {NavItem("app-settings", "Cài đặt cho ứng dụng")}
                             {NavItem("files", "Tệp đính kèm")}

@@ -26,6 +26,10 @@ export default function Configuration() {
         navigate(PATH.editConfiguration.replace(":id", configuration._id));
     }
 
+    const handleAddConfiguration = () => {
+        navigate(PATH.editConfiguration.replace(":id", "new"));
+    }
+
     return (
         <div id={styles.root}>
             <div className={styles.searchBarContainer}>
@@ -37,7 +41,7 @@ export default function Configuration() {
                     value={searchTerm}
                 />
                 <button className={styles.searchButton} onClick={handleSearch}>Tìm kiếm</button>
-                <button className={styles.searchButton}>Thêm</button>
+                <button className={styles.searchButton} onClick={handleAddConfiguration}>Thêm</button>
             </div>
             {
                 configurations.data && !configurations.isLoading && configurations.data.length > 0 && (

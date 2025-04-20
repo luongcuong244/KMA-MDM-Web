@@ -114,7 +114,11 @@ export default function CommonSettings({ configuration }) {
                     description,
                     (e) => {
                         setDescription(e.target.value);
-                        configuration.description = e.target.value;
+                        if (!e.target.value) {
+                            configuration.description = null;
+                        } else {
+                            configuration.description = e.target.value;
+                        }
                     },
                     false
                 )
