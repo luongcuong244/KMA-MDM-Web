@@ -5,6 +5,7 @@ import Loader from "../../../../components/Loader";
 import AddDeviceDialog from "../../../../parts/AddDeviceDialog";
 import deviceService from "../../../../services/device.service";
 import PATH from "../../../../enums/path.enum";
+import DeviceQRCodeDialog from "../../../../parts/DeviceQRCodeDialog";
 
 export default function Device() {
     const [error, setError] = useState(null);
@@ -12,6 +13,7 @@ export default function Device() {
     const [loading, setLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     const [openAddDeviceDialog, setOpenAddDeviceDialog] = useState(false);
+    const [selectedDevice, setSelectedDevice] = useState(null);
 
     useEffect(() => {
         // Fetch applications from the server
@@ -55,6 +57,18 @@ export default function Device() {
         setDevices((prevDevices) => [...prevDevices, newDevice]);
     };
 
+    const handleEditDevice = (deviceId) => {
+        console.log("Edit device with ID:", deviceId);
+    };
+
+    const handleDeleteDevice = (deviceId) => {
+        console.log("Delete device with ID:", deviceId);
+    }
+
+    const handleQrCodeDevice = (device) => {
+        setSelectedDevice(device);
+    }
+
     return (
         <div id={styles.root}>
             <div className={styles.searchBarContainer}>
@@ -97,13 +111,13 @@ export default function Device() {
                                                     </td>
                                                     <td>
                                                         <div style={{ display: "flex", gap: 5 }}>
-                                                            <button className={styles.signInButton}>
+                                                            <button className={styles.signInButton} onClick={() => handleEditDevice(device._id)}>
                                                                 <span class="glyphicon glyphicon-pencil"></span>
                                                             </button>
-                                                            <button className={styles.signInButton}>
+                                                            <button className={styles.signInButton} onClick={() => handleDeleteDevice(device._id)}>
                                                                 <span class="glyphicon glyphicon-trash"></span>
                                                             </button>
-                                                            <button className={styles.signInButton}>
+                                                            <button className={styles.signInButton} onClick={() => handleQrCodeDevice(device)}>
                                                                 <span class="glyphicon glyphicon-qrcode"></span>
                                                             </button>
                                                         </div>
@@ -144,6 +158,14 @@ export default function Device() {
                     isOpen={openAddDeviceDialog}
                     onClose={() => setOpenAddDeviceDialog(false)}
                     onSubmit={handleSubmit}
+                />
+            }
+            {
+                selectedDevice && 
+                <DeviceQRCodeDialog
+                    isOpen={selectedDevice}
+                    device={selectedDevice}
+                    onClose={() => setSelectedDevice(null)}
                 />
             }
         </div>
