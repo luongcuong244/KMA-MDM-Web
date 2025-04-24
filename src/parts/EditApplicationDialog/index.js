@@ -172,7 +172,7 @@ const EditApplicationDialog = ({ isOpen, onClose, onSubmit, application }) => {
     ) : {
         versionCode: 0,
         versionName: "0",
-        url: "",
+        url: null,
     };
 
     return (

@@ -19,12 +19,14 @@ const DeviceQRCodeDialog = ({ isOpen, onClose, device }) => {
         <div className={clsx(styles.dialogBackdrop, isExiting && styles.dialogBackdropExit)}>
             <div className={clsx(styles.dialog, isExiting ? styles.dialogExit : styles.dialogEnter)}>
                 <label className={styles.title}>Mã QR</label>
-                <div>
-                    <img
-                        src={`${CONSTANT.baseUrl}/${device.qrCode}`}
-                        alt="QR Code"
-                        className={styles.qrCode}
-                    />
+                <label className={styles.deviceId}>{device.deviceId}</label>
+                <img
+                    src={`${CONSTANT.baseUrl}/${device.qrCode}`}
+                    alt="QR Code"
+                    className={styles.qrCode}
+                />
+                <div className={styles.dialogActions}>
+                    <button type="button" onClick={handleClose}>Đóng</button>
                 </div>
             </div>
         </div>

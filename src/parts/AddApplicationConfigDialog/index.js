@@ -59,7 +59,7 @@ const AddApplicationConfigDialog = ({ configuration, isOpen, onClose, onSubmit }
         ) : {
             versionCode: 0,
             versionName: "0",
-            url: "",
+            url: null,
         };
         onSubmit({
             application: selectedApp,

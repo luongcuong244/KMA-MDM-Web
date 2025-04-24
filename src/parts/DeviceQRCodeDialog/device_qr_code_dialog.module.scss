@@ -20,9 +20,8 @@
     bottom: 0;
     background: rgba(0, 0, 0, 0.5);
     display: flex;
-    align-items: start;
+    align-items: center;
     justify-content: center;
-    padding-top: 24px;
     z-index: 1000;
 }
 
@@ -59,10 +58,10 @@
 }
 
 .dialog {
-    width: 600px;
+    width: 450px;
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    align-items: center;
     background: white;
     border-radius: 8px;
     padding: 20px;
@@ -77,50 +76,10 @@
     margin-bottom: 10px;
 }
 
-.field {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding-bottom: 20px;
-
-    .label {
-        width: 30%;
-        font-size: 0.875rem;
-        font-weight: 600;
-        color: #333;
-        margin-right: 24px;
-        text-align: right;
-    }
-
-    .inputContainer {
-        width: 70%;
-        height: 34px;
-        display: flex;
-        align-items: center;
-    }
-
-    .inputContainerBorder {
-        background-color: white;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        padding: 0px 12px;
-        font-size: 0.875rem;
-        color: #555;
-    }
-
-    .input {
-        width: 100%;
-        text-align: left;
-        border: none;
-    }
-
-    .checkBox {
-        width: 30px;
-        height: 30px;
-        margin-left: 16px;
-        cursor: pointer;
-    }
+.deviceId {
+    font-size: 1rem;
+    color: #555;
+    text-align: center;
 }
 
 .clearButton {
@@ -149,7 +108,7 @@
 
 .dialogActions {
     display: flex;
-    justify-content: flex-end;
+    justify-content: center;
     gap: 10px;
 
     button {
@@ -176,17 +135,7 @@
 }
 
 .qrCode {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    height: 100%;
-    margin-top: 20px;
-
-    img {
-        width: 200px;
-        height: 200px;
-        border-radius: 8px;
-        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
-    }
+    width: 350px;
+    height: 350px;
+    margin-bottom: 16px;
 }

@@ -125,7 +125,7 @@ export default function Application() {
                                             ) : {
                                                 versionCode: 0,
                                                 versionName: "0",
-                                                url: "",
+                                                url: null,
                                             };
                                             return (
                                                 <tr key={config.id}>
