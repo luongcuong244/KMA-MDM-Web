@@ -29,7 +29,7 @@ const AddApplicationAttributeDialog = ({ isOpen, onClose, onSubmit, configuratio
             return;
         }
         // can't duplicate attribute and package name together
-        const existingAppSetting = configuration.applicationSettings.find(appSetting => {
+        const existingAppSetting = (configuration.applicationSettings ?? []).find(appSetting => {
             return appSetting.application.pkg === selectedApp.pkg && appSetting.attribute === attribute;
         });
         if (existingAppSetting) {
