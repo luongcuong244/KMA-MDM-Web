@@ -22,8 +22,11 @@ const CurrentDeviceStatus = ({ isOpen, onClose, deviceId }) => {
             if (data.status === "error") {
                 setError(data.message || "Lỗi không xác định");
                 return; 
-            } else {
+            } else if (data.status === "success" && data.data && data.data.deviceStatus) {
                 setError("");
+                console.log("Device status:", data);
+            } else {
+                setError("Lỗi không xác định");
             }
         });
         return () => {
