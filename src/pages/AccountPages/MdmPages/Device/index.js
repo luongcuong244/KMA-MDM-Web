@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import styles from "./device.module.scss";
-import { useNavigate } from "react-router-dom";
 import Loader from "../../../../components/Loader";
 import AddDeviceDialog from "../../../../parts/AddDeviceDialog";
 import deviceService from "../../../../services/device.service";
 import PATH from "../../../../enums/path.enum";
 import DeviceQRCodeDialog from "../../../../parts/DeviceQRCodeDialog";
+import CurrentDeviceStatus from "../../../../parts/CurrentDeviceStatus";
 
 export default function Device() {
     const [error, setError] = useState(null);
@@ -14,6 +14,8 @@ export default function Device() {
     const [searchTerm, setSearchTerm] = useState("");
     const [openAddDeviceDialog, setOpenAddDeviceDialog] = useState(false);
     const [selectedDevice, setSelectedDevice] = useState(null);
+    const [openDeviceQRCodeDialog, setOpenDeviceQRCodeDialog] = useState(false);
+    const [openCurrentDeviceStatusDialog, setOpenCurrentDeviceStatusDialog] = useState(false);
 
     useEffect(() => {
         // Fetch applications from the server
@@ -67,6 +69,12 @@ export default function Device() {
 
     const handleQrCodeDevice = (device) => {
         setSelectedDevice(device);
+        setOpenDeviceQRCodeDialog(true);
+    }
+
+    const viewCurrentDeviceStatus = (device) => {
+        setSelectedDevice(device);
+        setOpenCurrentDeviceStatusDialog(true);
     }
 
     return (
@@ -111,6 +119,9 @@ export default function Device() {
                                                     </td>
                                                     <td>
                                                         <div style={{ display: "flex", gap: 5 }}>
+                                                            <button className={styles.signInButton} onClick={() => viewCurrentDeviceStatus(device)}>
+                                                                <span class="glyphicon glyphicon-phone"></span>
+                                                            </button>
                                                             <button className={styles.signInButton} onClick={() => handleEditDevice(device._id)}>
                                                                 <span class="glyphicon glyphicon-pencil"></span>
                                                             </button>
@@ -161,11 +172,25 @@ export default function Device() {
                 />
             }
             {
-                selectedDevice && 
+                openDeviceQRCodeDialog && selectedDevice && 
                 <DeviceQRCodeDialog
-                    isOpen={selectedDevice}
+                    isOpen={openDeviceQRCodeDialog}
                     device={selectedDevice}
-                    onClose={() => setSelectedDevice(null)}
+                    onClose={() => {
+                        setOpenDeviceQRCodeDialog(false);
+                        setSelectedDevice(null);
+                    }}
+                />
+            }
+            {
+                openCurrentDeviceStatusDialog && selectedDevice &&
+                <CurrentDeviceStatus
+                    isOpen={openCurrentDeviceStatusDialog}
+                    deviceId={selectedDevice.deviceId}
+                    onClose={() => {
+                        setOpenCurrentDeviceStatusDialog(false);
+                        setSelectedDevice(null);
+                    }}
                 />
             }
         </div>
