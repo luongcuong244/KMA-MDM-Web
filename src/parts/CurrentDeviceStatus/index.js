@@ -2,10 +2,13 @@ import React, { useEffect, useState } from "react";
 import styles from "./current_device_status.module.scss";
 import clsx from "clsx";
 import socket from "../../socket/socket";
+import Converter from "../../utils/converter";
 
 const CurrentDeviceStatus = ({ isOpen, onClose, deviceId }) => {
     const [isExiting, setIsExiting] = useState(false);
     const [error, setError] = useState("");
+    const [showDeviceInfo, setShowDeviceInfo] = useState(false);
+    const [deviceStatus, setDeviceStatus] = useState(null);
 
     useEffect(() => {
         socket.connect();
@@ -23,8 +26,9 @@ const CurrentDeviceStatus = ({ isOpen, onClose, deviceId }) => {
                 setError(data.message || "Lỗi không xác định");
                 return; 
             } else if (data.status === "success" && data.data && data.data.deviceStatus) {
+                console.log("deviceStatus", data.data.deviceStatus);
                 setError("");
-                console.log("Device status:", data);
+                setDeviceStatus(data.data.deviceStatus);
             } else {
                 setError("Lỗi không xác định");
             }
@@ -44,18 +48,27 @@ const CurrentDeviceStatus = ({ isOpen, onClose, deviceId }) => {
         }, 500);
     }
 
-    const renderTextField = (label, placeholder, value, onChange) => {
+    const renderTextField = (label, value) => {
         return (
             <div className={styles.field}>
                 <label className={styles.label}>{label}</label>
                 <div className={clsx(styles.inputContainer, styles.inputContainerBorder)}>
+                    <p className={styles.input}>{value}</p>
+                </div>
+            </div>
+        );
+    };
+
+    const renderCheckboxField = (label, value, onChange) => {
+        return (
+            <div className={styles.field}>
+                <label className={styles.label}>{label}</label>
+                <div className={styles.inputContainer}>
                     <input
-                        type="text"
-                        className={styles.input}
-                        placeholder={placeholder}
-                        value={value}
+                        type="checkbox"
+                        className={styles.checkBox}
+                        checked={value}
                         onChange={onChange}
-                        disabled={true}
                     />
                 </div>
             </div>
@@ -70,15 +83,171 @@ const CurrentDeviceStatus = ({ isOpen, onClose, deviceId }) => {
                     error && <label className={styles.error}>{error}</label>
                 }
                 {
-                    !error && (
-                        <div>
+                    !error && deviceStatus && (
+                        <div className={styles.dialogContent}>
                             {
                                 renderTextField(
                                     "Mã thiết bị",
-                                    "Nhập mã thiết bị",
-                                    "deviceId",
-                                    // (e) => setDeviceId(e.target.value),
-                                    // false
+                                    deviceId,
+                                )
+                            }
+                            {
+                                renderCheckboxField(
+                                    "Hiện thông tin máy",
+                                    showDeviceInfo,
+                                    (e) => {
+                                        setShowDeviceInfo(e.target.checked);
+                                    }
+                                )
+                            }
+                            {
+                                showDeviceInfo && (
+                                    <>
+                                        {
+                                            renderTextField(
+                                                "Tên thiết bị",
+                                                deviceStatus.deviceInfo.deviceName
+                                            )
+                                        }
+                                        {
+                                            renderTextField(
+                                                "Mẫu thiết bị",
+                                                deviceStatus.deviceInfo.deviceModel
+                                            )
+                                        }
+                                        {
+                                            renderTextField(
+                                                "Thương hiệu",
+                                                deviceStatus.deviceInfo.deviceBrand
+                                            )
+                                        }
+                                        {
+                                            renderTextField(
+                                                "Sản phẩm",
+                                                deviceStatus.deviceInfo.deviceProduct
+                                            )
+                                        }
+                                        {
+                                            renderTextField(
+                                                "Nhà sản xuất",
+                                                deviceStatus.deviceInfo.deviceManufacturer
+                                            )
+                                        }
+                                        {
+                                            renderTextField(
+                                                "Số serial",
+                                                deviceStatus.deviceInfo.deviceSerial
+                                            )
+                                        }
+                                        {
+                                            renderTextField(
+                                                "Phần cứng thiết bị",
+                                                deviceStatus.deviceInfo.deviceHardware
+                                            )
+                                        }
+                                        {
+                                            renderTextField(
+                                                "Mã bản dựng",
+                                                deviceStatus.deviceInfo.deviceBuildId
+                                            )
+                                        }
+                                        {
+                                            renderTextField(
+                                                "Phiên bản android",
+                                                deviceStatus.deviceInfo.androidVersion
+                                            )
+                                        }
+                                        {
+                                            renderTextField(
+                                                "Phiên bản SDK Android",
+                                                deviceStatus.deviceInfo.androidSdkVersion
+                                            )
+                                        }
+                                        {
+                                            renderTextField(
+                                                "Id Android",
+                                                deviceStatus.deviceInfo.androidId
+                                            )
+                                        }
+                                        {
+                                            renderTextField(
+                                                "IMEI",
+                                                deviceStatus.deviceInfo.imei
+                                            )
+                                        }
+                                        {
+                                            renderTextField(
+                                                "Kiến trúc CPU",
+                                                deviceStatus.deviceInfo.cpuArch
+                                            )
+                                        }
+                                        {
+                                            renderTextField(
+                                                "Số lõi CPU",
+                                                deviceStatus.deviceInfo.cpuCores
+                                            )
+                                        }
+                                    </>
+                                )
+                            }
+                            {
+                                renderTextField(
+                                    "Tổng RAM",
+                                    Converter.formatStorage(deviceStatus.deviceInfo.totalRAM)
+                                )
+                            }
+                            {
+                                renderTextField(
+                                    "Dung lượng bộ nhớ",
+                                    Converter.formatStorage(deviceStatus.deviceInfo.totalStorage)
+                                )
+                            }
+                            {
+                                renderTextField(
+                                    "Phần trăm pin",
+                                    deviceStatus.batteryLevel
+                                )
+                            }
+                            {
+                                renderTextField(
+                                    "Đang sạc",
+                                    deviceStatus.isCharging ? "Có" : "Không"
+                                )
+                            }
+                            {
+                                renderTextField(
+                                    "Sử dụng bộ nhớ",
+                                    `${Converter.formatStorage(deviceStatus.storageUsage)} / ${Converter.formatStorage(deviceStatus.deviceInfo.totalStorage)}`
+                                )
+                            }
+                            {
+                                renderTextField(
+                                    "Sử dụng RAM",
+                                    `${Converter.formatStorage(deviceStatus.ramUsage)} / ${Converter.formatStorage(deviceStatus.deviceInfo.totalRAM)}`
+                                )
+                            }
+                            {
+                                renderTextField(
+                                    "Đang khóa",
+                                    deviceStatus.isLocked ? "Có" : "Không"
+                                )
+                            }
+                            {
+                                renderTextField(
+                                    "Loại kết nối",
+                                    deviceStatus.networkType === "WiFi" ? "WiFi" : "Mạng di động"
+                                )
+                            }
+                            {
+                                renderTextField(
+                                    "Bật định vị",
+                                    deviceStatus.locationEnabled ? "Có" : "Không"
+                                )
+                            }
+                            {
+                                renderTextField(
+                                    "Vị trí hiện tại",
+                                    deviceStatus.location
                                 )
                             }
                         </div>

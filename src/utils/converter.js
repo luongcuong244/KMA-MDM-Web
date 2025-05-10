@@ -82,6 +82,18 @@ function formatDate(timestamp) {
   return `${day}/${month}/${year} ${hours}:${minutes}`;
 }
 
+const formatStorage = (bytes) => {
+  const units = ['B', 'KB', 'MB', 'GB', 'TB'];
+  let unitIndex = 0;
+
+  while (bytes >= 1024 && unitIndex < units.length - 1) {
+    bytes /= 1024;
+    unitIndex++;
+  }
+
+  return `${bytes.toFixed(2)} ${units[unitIndex]}`;
+};
+
 const Converter = {
   formatMoney,
   formatCurrency,
@@ -89,7 +101,8 @@ const Converter = {
   formatDateToPlayedTimeFormation,
   convertPlayedTimeFormationToTimestamp,
   convertPlayedTimeToMinutes,
-  formatDate
+  formatDate,
+  formatStorage,
 };
 
 export default Converter;
