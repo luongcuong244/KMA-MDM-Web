@@ -9,6 +9,7 @@ const PATH = {
   applicationVersion: "/application/:pkg/versions",
   configuration: "/configurations",
   editConfiguration: "/configuration/:id",
+  pushMessage: "/push-messages",
 };
 
 export default PATH;

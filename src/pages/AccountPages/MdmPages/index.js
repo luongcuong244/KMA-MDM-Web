@@ -5,6 +5,7 @@ import PATH from "../../../enums/path.enum";
 import Device from "./Device";
 import Application from "./Application";
 import Configuration from "./Configuration";
+import PushMessage from "./PushMessage";
 
 export default function MdmPages() {
     return (
@@ -26,6 +27,11 @@ export default function MdmPages() {
                         path: PATH.configuration,
                         text: "Cấu hình",
                         page: Configuration,
+                    },
+                    {
+                        path: PATH.pushMessage,
+                        text: "Tin nhắn đẩy",
+                        page: PushMessage,
                     },
                 ]}
             />
