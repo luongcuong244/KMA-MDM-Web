@@ -7,6 +7,7 @@ import Application from "./Application";
 import Configuration from "./Configuration";
 import PushMessage from "./PushMessage";
 import RemoteControl from "./RemoteControl";
+import SystemCommand from "./SystemCommand";
 
 export default function MdmPages() {
     return (
@@ -38,6 +39,11 @@ export default function MdmPages() {
                         path: PATH.remoteControl,
                         text: "Điều khiển từ xa",
                         page: RemoteControl,
+                    },
+                    {
+                        path: PATH.systemCommand,
+                        text: "Lệnh hệ thống",
+                        page: SystemCommand,
                     },
                 ]}
             />
