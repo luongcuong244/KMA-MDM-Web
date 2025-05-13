@@ -6,6 +6,7 @@ import Device from "./Device";
 import Application from "./Application";
 import Configuration from "./Configuration";
 import PushMessage from "./PushMessage";
+import RemoteControl from "./RemoteControl";
 
 export default function MdmPages() {
     return (
@@ -32,6 +33,11 @@ export default function MdmPages() {
                         path: PATH.pushMessage,
                         text: "Tin nhắn đẩy",
                         page: PushMessage,
+                    },
+                    {
+                        path: PATH.remoteControl,
+                        text: "Điều khiển từ xa",
+                        page: RemoteControl,
                     },
                 ]}
             />

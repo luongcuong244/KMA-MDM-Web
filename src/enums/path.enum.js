@@ -10,6 +10,7 @@ const PATH = {
   configuration: "/configurations",
   editConfiguration: "/configuration/:id",
   pushMessage: "/push-messages",
+  remoteControl: "/remote-control",
 };
 
 export default PATH;
