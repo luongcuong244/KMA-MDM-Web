@@ -8,6 +8,14 @@ class DeviceService {
     async getDeviceList() {
         return axiosApiInstance.get(API_URL + "get-device-list");
     }
+
+    async getDeviceById(deviceId) {
+        return axiosApiInstance.get(API_URL + "get-device-by-id", {
+            params: {
+                deviceId: deviceId
+            }
+        });
+    }
     
     async addNewDevice(data) {
         return axiosApiInstance.post(API_URL + "add-new-device", data);

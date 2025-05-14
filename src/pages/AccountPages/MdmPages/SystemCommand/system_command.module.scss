@@ -135,3 +135,31 @@
         border-color: #535353;
     }
 }
+
+.row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 32px;
+    margin-bottom: 8px;
+    
+    .rowTitle {
+        width: 300px;
+        text-align: right;
+        font-size: 1rem;
+        color: #333;
+        font-weight: 400;
+    }
+
+    .rowValue {
+        font-size: 1rem;
+        color: #333;
+        font-weight: 800;
+    }
+}
+
+.buttons {
+    display: flex;
+    flex-direction: row;
+    margin-top: 32px;
+}
