@@ -6,6 +6,7 @@ import Converter from "../../../../utils/converter";
 
 export default function SystemCommand() {
     const [error, setError] = useState("");
+    const [message, setMessage] = useState("");
     const [deviceId, setDeviceId] = useState(null);
     const [device, setDevice] = useState(null);
 
@@ -14,8 +15,24 @@ export default function SystemCommand() {
         socket.on("connect", () => {
             socket.emit("web:send:get_push_messages");
         });
+        socket.on("web:receive:system_command", (data) => {
+            if (data.error) {
+                setError(data.error);
+                setMessage("");
+            } else if (data.message) {
+                setMessage(data.message);
+                setError("");
+                if (data.device) {
+                    setDevice(data.device);
+                }
+            } else {
+                setError("");
+                setMessage("");
+            }
+        });
         return () => {
             socket.off("connect");
+            socket.off("web:receive:system_command");
             socket.disconnect();
         }
     }, [])
@@ -23,6 +40,7 @@ export default function SystemCommand() {
     const handleSearch = async () => {
         if (!deviceId) {
             setError("Vui lòng nhập mã thiết bị");
+            setMessage("");
             return;
         }
         deviceService.getDeviceById(deviceId)
@@ -30,14 +48,17 @@ export default function SystemCommand() {
                 if (response.status === 200) {
                     setDevice(response.data.data);
                     setError("");
+                    setMessage("");
                 } else {
                     setDevice(null);
                     setError("Không tìm thấy thiết bị");
+                    setMessage("");
                 }
             })
             .catch((error) => {
                 setDevice(null);
                 setError("Không tìm thấy thiết bị");
+                setMessage("");
             })
     }
 
@@ -75,6 +96,13 @@ export default function SystemCommand() {
                 error && (
                     <div className={styles.error}>
                         <span className={styles.errorText}>{error}</span>
+                    </div>
+                )
+            }
+            {
+                message && (
+                    <div className={styles.error}>
+                        <span className={styles.messageText}>{message}</span>
                     </div>
                 )
             }
