@@ -165,3 +165,30 @@ label {
 @media screen and (max-width: 576px) {
   
 }
+
+#video-container {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+  max-height: 100vh;
+  max-width: 100%
+}
+
+#video-container video {
+  width: 100%;
+  height: 100%;
+  pointer-events: none
+}
+
+#remote-container {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+  background-color: rgba(0, 0, 0, 0.7);
+}

@@ -2,14 +2,17 @@ import React, { useEffect, useState, useRef } from "react";
 import styles from "./remote_control.module.scss";
 import socketRemote from "../../../../socket/socketRemote";
 import { WebRTC } from "../../../../utils/webrtc";
+import deviceService from "../../../../services/device.service";
+import Loader from "../../../../components/Loader";
 
 function log(level, message, context = {}) {
     console.log(`[${level}] ${message}`, context);
 }
 
 export default function RemoteControl() {
-    const [error, setError] = useState("dsđasadsadsds");
+    const [error, setError] = useState("");
 
+    const [device, setDevice] = useState(null);
     const [deviceId, setDeviceId] = useState(null);
 
     const webRTC = useRef(null);
@@ -32,15 +35,41 @@ export default function RemoteControl() {
             }
         })
     )
+    const uiElementsRef = useRef(null)
 
     useEffect(() => {
         webRTC.current = new WebRTC("client-id", streamState.current, onNewTrack);
         webRTC.current.waitForServerOnlineAndConnect();
 
+        uiElementsRef.current = {
+            startContainer: document.getElementById('start-container'),
+            streamIdInput: document.getElementById('stream-id'),
+            passwordInput: document.getElementById('stream-password'),
+            streamJoinButton: document.getElementById('streamJoinButton'),
+            joinButtonLoader: document.getElementById('joinButtonLoader'),
+            streamJoinCell: document.getElementById('stream-join'),
+            streamErrorCell: document.getElementById('stream-error'),
+            streamWaitContainer: document.getElementById('stream-wait-container'),
+            streamWaitStreamId: document.getElementById('stream-wait-stream-id'),
+            streamingHeader: document.getElementById('streaming-header'),
+            streamingContainerText: document.getElementById('streaming-container-text'),
+            videoContainer: document.getElementById('video-container'),
+            videoElement: document.getElementById('video-element'),
+            remoteContainer: document.getElementById('remote-container'),
+            remoteLoader: document.getElementById('remote-loader'),
+        };
+
+        const beforeUnloadHandler = () => {
+            webRTC.current.leaveStream(false);
+        }
+
+        window.addEventListener('beforeunload', beforeUnloadHandler);
+
         return () => {
             if (webRTC.current) {
                 webRTC.current.disconnectSocket();
             }
+            window.removeEventListener('beforeunload', beforeUnloadHandler);
         }
     }, [])
 
@@ -52,47 +81,66 @@ export default function RemoteControl() {
             log('warn', `onNewState.error: ${state.error}`, { error: state.error });
         }
 
-        // UIElements.startContainer.style.display = (!state.isStreamJoined) ? 'block' : 'none';
-        // UIElements.streamWaitContainer.style.display = (state.isStreamJoined && !state.isStreamRunning) ? 'block' : 'none';
-        // UIElements.streamingHeader.style.display = (state.isStreamRunning) ? 'block' : 'none';
-        // UIElements.videoContainer.style.display = (state.isStreamRunning) ? 'block' : 'none';
+        const UIElements = uiElementsRef.current;
+        if (!UIElements) return;
 
-        // UIElements.joinButtonLoader.style.display = (!state.isServerAvailable || (state.isServerAvailable && state.isTokenAvailable) || state.isJoiningStream) ? 'block' : 'none';
+        UIElements.startContainer?.style && (UIElements.startContainer.style.display = (!state.isStreamJoined) ? 'block' : 'none');
+        UIElements.streamWaitContainer?.style && (UIElements.streamWaitContainer.style.display = (state.isStreamJoined && !state.isStreamRunning) ? 'block' : 'none');
+        UIElements.streamingHeader?.style && (UIElements.streamingHeader.style.display = (state.isStreamRunning) ? 'block' : 'none');
+        UIElements.videoContainer?.style && (UIElements.videoContainer.style.display = (state.isStreamRunning) ? 'block' : 'none');
 
-        // UIElements.streamJoinButton.style.display = (state.isSocketConnected && !state.isJoiningStream) ? 'table-cell' : 'none';
+        UIElements.joinButtonLoader?.style && (UIElements.joinButtonLoader.style.display = (!state.isServerAvailable || (state.isServerAvailable && state.isTokenAvailable) || state.isJoiningStream) ? 'block' : 'none');
 
-        // UIElements.streamErrorCell.style.display = (state.error) ? 'block' : 'none';
+        UIElements.streamJoinButton?.style && (UIElements.streamJoinButton.style.display = (state.isSocketConnected && !state.isJoiningStream) ? 'table-cell' : 'none');
+
+        UIElements.streamErrorCell?.style && (UIElements.streamErrorCell.style.display = (state.error) ? 'block' : 'none');
+
+        UIElements.remoteContainer?.style && (UIElements.remoteContainer.style.display = (state.isStreamRunning) ? 'block' : 'none');
 
         if (state.error) {
+            uiElementsRef.current.remoteContainer.style.display = 'none';
+
+            const errorCell = UIElements.streamErrorCell;
+            const joinCell = UIElements.streamJoinCell;
+            const joinButton = UIElements.streamJoinButton;
+            const loader = UIElements.joinButtonLoader;
+
             switch (state.error) {
                 case 'ERROR:TURNSTILE:200100':
-                    // UIElements.streamErrorCell.innerText = 'Incorrect device clock time. Please adjust and reload the page.';
-                    // UIElements.streamJoinCell.style.display = 'none';
-                    // UIElements.streamJoinButton.style.display = 'none';
-                    // UIElements.joinButtonLoader.style.display = 'none';
+                    setError("Incorrect device clock time. Please adjust and reload the page.")    
+
+                    errorCell && (errorCell.innerText = 'Incorrect device clock time. Please adjust and reload the page.');
+                    joinCell?.style && (joinCell.style.display = 'none');
+                    joinButton?.style && (joinButton.style.display = 'none');
+                    loader?.style && (loader.style.display = 'none');
                     break;
                 case 'ERROR:WRONG_STREAM_ID':
-                    //UIElements.streamErrorCell.innerText = 'Wrong stream id';
+                    setError("Thiết bị chưa được thêm hoặc đang không hoạt động ( Wrong stream id )");
+                    errorCell && (errorCell.innerText = 'Wrong stream id');
                     break;
                 case 'ERROR:NO_STREAM_HOST_FOUND':
-                    //UIElements.streamErrorCell.innerText = 'Stream not found';
+                    setError("Thiết bị chưa được thêm hoặc đang không hoạt động ( Stream not found )");
+                    errorCell && (errorCell.innerText = 'Stream not found');
                     break;
                 case 'ERROR:WRONG_STREAM_PASSWORD':
-                    //UIElements.streamErrorCell.innerText = 'Wrong stream password';
+                    setError("Sai mật khẩu stream");
+                    errorCell && (errorCell.innerText = 'Wrong stream password');
                     break;
                 default:
-                    // UIElements.streamErrorCell.innerText = 'Something went wrong. Reload this page and try again.' + `\n[${state.error}]\n\n`;
-                    // UIElements.streamJoinCell.style.display = 'none';
-                    // UIElements.streamJoinButton.style.display = 'none';
-                    // UIElements.joinButtonLoader.style.display = 'none';
+                    setError("Có lỗi xảy ra. Vui lòng tải lại trang và thử lại");
+                    errorCell && (errorCell.innerText = 'Something went wrong. Reload this page and try again.' + `\n[${state.error}]\n\n`);
+                    joinCell?.style && (joinCell.style.display = 'none');
+                    joinButton?.style && (joinButton.style.display = 'none');
+                    loader?.style && (loader.style.display = 'none');
                     break;
             }
+        } else {
+            setError("");
         }
 
         if (key === 'isStreamJoined' && state.isStreamJoined) {
-            //UIElements.streamWaitStreamId.innerText = 'Stream Id: {streamId}'.replace('{streamId}', state.streamId);
-
-            //UIElements.streamingContainerText.innerText = 'Stream Id: {streamId}'.replace('{streamId}', state.streamId);
+            UIElements.streamWaitStreamId && (UIElements.streamWaitStreamId.innerText = `Stream Id: ${state.streamId}`);
+            UIElements.streamingContainerText && (UIElements.streamingContainerText.innerText = `Stream Id: ${state.streamId}`);
         }
 
         if (key === 'isStreamRunning') {
@@ -102,10 +150,10 @@ export default function RemoteControl() {
                 // window.addEventListener('mouseout', streamingContainerOnMouseOut);
                 // streamingContainerOnMouseMove();
             } else {
-                // if (UIElements.videoElement && UIElements.videoElement.srcObject) {
-                //     UIElements.videoElement.srcObject.getTracks().forEach(track => track.stop());
-                //     UIElements.videoElement.srcObject = null;
-                // }
+                if (UIElements.videoElement && UIElements.videoElement.srcObject) {
+                    UIElements.videoElement.srcObject.getTracks().forEach(track => track.stop());
+                    UIElements.videoElement.srcObject = null;
+                }
 
                 // clearTimeout(hideTimeout);
                 // window.removeEventListener('mousemove', streamingContainerOnMouseMove);
@@ -118,11 +166,13 @@ export default function RemoteControl() {
     const onNewTrack = (track) => {
         console.log(`onNewTrack: ${track.id}`, { track_id: track.id });
 
-        // if (!UIElements.videoElement.srcObject) {
-        //     UIElements.videoElement.srcObject = new MediaStream();
-        // }
+        const UIElements = uiElementsRef.current;
 
-        // UIElements.videoElement.srcObject.addTrack(track);
+        if (!UIElements.videoElement.srcObject) {
+            UIElements.videoElement.srcObject = new MediaStream();
+        }
+
+        UIElements.videoElement.srcObject.addTrack(track);
     };
 
     const handleJoinStream = () => {
@@ -130,7 +180,32 @@ export default function RemoteControl() {
             setError("Vui lòng nhập mã thiết bị");
             return;
         }
-        webRTC.current.joinStream(deviceId, "password");
+        uiElementsRef.current.remoteContainer.style.display = 'block';
+        uiElementsRef.current.remoteLoader.style.display = 'flex';
+        deviceService.getDeviceById(deviceId)
+            .then((res) => {
+                if (res.status === 200) {
+                    setDevice(res.data.data);
+                    setError("");
+                    // join stream
+                    webRTC.current.joinStream(deviceId, "password");
+
+                    console.log("Full screen size: ", device.fullScreenWidth, " x ",device.fullScreenHeight);
+                    console.log("Display size: ", device.displayScreenWidth, " x ",device.displayScreenHeight);
+                    console.log("Status bar height: ", device.statusBarHeight);
+                    console.log("Navigation bar height: ", device.navigationBarHeight);
+                } else {
+                    setError("Thiết bị chưa được thêm hoặc đang không hoạt động");
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+                setError("Thiết bị chưa được thêm hoặc đang không hoạt động");
+                uiElementsRef.current.remoteContainer.style.display = 'none';
+            })
+            .finally(() => {
+                uiElementsRef.current.remoteLoader.style.display = 'none';
+            });
     };
 
     return (
@@ -152,6 +227,17 @@ export default function RemoteControl() {
                     value={deviceId}
                 />
                 <button className={styles.searchButton} onClick={handleJoinStream}>Điều khiển</button>
+            </div>
+            <div id={"remote-container"} style={{ display: 'none' }}>
+                <div id={"video-container"} style={{ display: 'none' }}>
+                    <video id={"video-element"} muted autoPlay playsInline controls></video>
+                </div>
+                <button className={styles.leaveStreamButton} onClick={() => {
+                    webRTC.current.leaveStream(true);
+                }}>Ngắt kết nối</button>
+                <div id={"remote-loader"} className={styles.loaderContainer}>
+                    <Loader color="#535353" width="45px" />
+                </div>
             </div>
         </div>
     );
