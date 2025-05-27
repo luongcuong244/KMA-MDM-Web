@@ -20,6 +20,16 @@ class DeviceService {
     async addNewDevice(data) {
         return axiosApiInstance.post(API_URL + "add-new-device", data);
     }
+
+    async deleteDeviceById(deviceId) {
+        return axiosApiInstance.post(API_URL + "delete-device-by-id", {
+            deviceId: deviceId
+        });
+    }
+    
+    async updateDeviceById(data) {
+        return axiosApiInstance.post(API_URL + "update-device-by-id", data);
+    }
 }
 
 export default new DeviceService();

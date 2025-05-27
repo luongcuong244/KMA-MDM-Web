@@ -6,6 +6,8 @@ import deviceService from "../../../../services/device.service";
 import PATH from "../../../../enums/path.enum";
 import DeviceQRCodeDialog from "../../../../parts/DeviceQRCodeDialog";
 import CurrentDeviceStatus from "../../../../parts/CurrentDeviceStatus";
+import Converter from "../../../../utils/converter";
+import EditDeviceDialog from "../../../../parts/EditDeviceDialog";
 
 export default function Device() {
     const [error, setError] = useState(null);
@@ -13,6 +15,7 @@ export default function Device() {
     const [loading, setLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     const [openAddDeviceDialog, setOpenAddDeviceDialog] = useState(false);
+    const [openEditDeviceDialog, setOpenEditDeviceDialog] = useState(false);
     const [selectedDevice, setSelectedDevice] = useState(null);
     const [openDeviceQRCodeDialog, setOpenDeviceQRCodeDialog] = useState(false);
     const [openCurrentDeviceStatusDialog, setOpenCurrentDeviceStatusDialog] = useState(false);
@@ -59,12 +62,32 @@ export default function Device() {
         setDevices((prevDevices) => [...prevDevices, newDevice]);
     };
 
-    const handleEditDevice = (deviceId) => {
-        console.log("Edit device with ID:", deviceId);
+    const handleEditDevice = (device) => {
+        setSelectedDevice(device);
+        setOpenEditDeviceDialog(true);
     };
 
     const handleDeleteDevice = (deviceId) => {
-        console.log("Delete device with ID:", deviceId);
+        if (window.confirm("Bạn có chắc chắn muốn xóa thiết bị này?")) {
+            deviceService.deleteDeviceById(deviceId)
+                .then((response) => {
+                    if (response.data) {
+                        setDevices((prevDevices) => prevDevices.filter(device => device.deviceId !== deviceId));
+                        setError(null);
+                    } else {
+                        console.error("Failed to delete device");
+                        setError("Failed to delete device");
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error deleting device:", error);
+                    if (error.response && error.response.data) {
+                        setError(error.response.data.message);
+                    } else {
+                        setError("Error deleting device");
+                    }
+                });
+        }
     }
 
     const handleQrCodeDevice = (device) => {
@@ -98,9 +121,10 @@ export default function Device() {
                                 <thead>
                                     <tr>
                                         <th>Trạng thái</th>
-                                        <th>Thời gian</th>
+                                        <th>Thời gian đăng ký</th>
                                         <th>Mã thiết bị</th>
                                         <th>Cấu hình</th>
+                                        <th>Mô tả</th>
                                         <th>Hành động</th>
                                     </tr>
                                 </thead>
@@ -110,22 +134,23 @@ export default function Device() {
                                             return (
                                                 <tr key={device._id}>
                                                     <td>{device.status}</td>
-                                                    <td>{device.enrollDate ?? "unknown"}</td>
+                                                    <td>{device.enrollDate ? Converter.formatDate(device.enrollDate) : "--:--"}</td>
                                                     <td>{device.deviceId}</td>
                                                     <td>
                                                         <a
                                                             href={PATH.editConfiguration.replace(":id", device.configuration._id)}
                                                         >{device.configuration.name}</a>
                                                     </td>
+                                                    <td>{device.description}</td>
                                                     <td>
                                                         <div style={{ display: "flex", gap: 5 }}>
                                                             <button className={styles.signInButton} onClick={() => viewCurrentDeviceStatus(device)}>
                                                                 <span class="glyphicon glyphicon-phone"></span>
                                                             </button>
-                                                            <button className={styles.signInButton} onClick={() => handleEditDevice(device._id)}>
+                                                            <button className={styles.signInButton} onClick={() => handleEditDevice(device)}>
                                                                 <span class="glyphicon glyphicon-pencil"></span>
                                                             </button>
-                                                            <button className={styles.signInButton} onClick={() => handleDeleteDevice(device._id)}>
+                                                            <button className={styles.signInButton} onClick={() => handleDeleteDevice(device.deviceId)}>
                                                                 <span class="glyphicon glyphicon-trash"></span>
                                                             </button>
                                                             <button className={styles.signInButton} onClick={() => handleQrCodeDevice(device)}>
@@ -172,13 +197,27 @@ export default function Device() {
                 />
             }
             {
-                openDeviceQRCodeDialog && selectedDevice && 
+                openDeviceQRCodeDialog && selectedDevice &&
                 <DeviceQRCodeDialog
                     isOpen={openDeviceQRCodeDialog}
                     device={selectedDevice}
                     onClose={() => {
                         setOpenDeviceQRCodeDialog(false);
                         setSelectedDevice(null);
+                    }}
+                />
+            }
+            {
+                openEditDeviceDialog && selectedDevice &&
+                <EditDeviceDialog
+                    isOpen={openEditDeviceDialog}
+                    device={selectedDevice}
+                    onClose={() => {
+                        setOpenEditDeviceDialog(false);
+                        setSelectedDevice(null);
+                    }}
+                    onSubmit={(updatedDevice) => {
+                        setDevices((prevDevices) => prevDevices.map(device => device.deviceId === updatedDevice.deviceId ? updatedDevice : device));
                     }}
                 />
             }
