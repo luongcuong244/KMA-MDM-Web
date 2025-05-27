@@ -48,6 +48,12 @@ class ApplicationService {
     async getAvailableApplicationForConfig(data) {
         return axiosApiInstance.post(API_URL + "get-available-application-for-config", data);
     }
+
+    async deleteApplication(packageName) {
+        return axiosApiInstance.post(API_URL + "delete-application", {
+            packageName: packageName,
+        });
+    }
 }
 
 export default new ApplicationService();

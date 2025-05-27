@@ -190,3 +190,20 @@
     display: flex;
     justify-content: center;
 }
+
+.signInButton {
+    width: 40px;
+    height: 28px;
+    color: #333;
+    border-radius: 4px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    &:hover {
+        background-color: #f6f8fc;
+        border-color: #535353;
+    }
+}

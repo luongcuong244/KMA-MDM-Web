@@ -115,6 +115,7 @@ export default function Applications({ configuration }) {
                                         <th>Thứ tự hiển thị</th>
                                         <th>Mở khi cài đặt</th>
                                         <th>Mở khi khởi động máy</th>
+                                        <th></th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -130,7 +131,36 @@ export default function Applications({ configuration }) {
                                                             <label>{app.pkg}</label>
                                                         </div>
                                                     </td>
-                                                    <td>{appConfig.version.versionName}</td>
+                                                    <td>
+                                                        {
+                                                            appConfig.application.isSystemApp ? (
+                                                                <>{appConfig.version.versionName}</>
+                                                            ) :
+                                                                (
+                                                                    renderComboBoxField(
+                                                                        {},
+                                                                        appConfig.application.versions.map((version) => ({
+                                                                            label: version.versionName,
+                                                                            value: version._id,
+                                                                        })),
+                                                                        appConfig.version._id,
+                                                                        e => {
+                                                                            const newConfigs = [...applicationConfigs];
+                                                                            const index = newConfigs.findIndex((config) => config.application._id === appConfig.application._id);
+                                                                            if (index !== -1) {
+                                                                                const selectedVersion = appConfig.application.versions.find(
+                                                                                    (version) => version._id === e.target.value
+                                                                                );
+                                                                                if (selectedVersion) {
+                                                                                    newConfigs[index].version = selectedVersion;
+                                                                                    updateApplicationConfigs(newConfigs);
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    )
+                                                                )
+                                                        }
+                                                    </td>
                                                     <td>
                                                         {
                                                             renderComboBoxField(
@@ -235,6 +265,48 @@ export default function Applications({ configuration }) {
                                                                 }}
                                                             />
                                                         </div>
+                                                    </td>
+                                                    <td>
+                                                        <button
+                                                            className={styles.signInButton}
+                                                            onClick={() => {
+                                                                const confirmed = window.confirm(`Bạn có chắc chắn muốn xoá ứng dụng "${app.name}" không?`);
+                                                                if (!confirmed) return;
+
+                                                                // Kiểm tra xem có đang được dùng trong application settings
+                                                                const isUsedInSettings = configuration.applicationSettings.some((setting) => {
+                                                                    return setting.application && setting.application._id === appConfig.application._id;
+                                                                });
+
+                                                                if (isUsedInSettings) {
+                                                                    alert(`Ứng dụng "${app.name}" đang được sử dụng trong cài đặt ứng dụng và không thể xoá.`);
+                                                                    return;
+                                                                }
+
+                                                                // Kiểm tra xem có đang được đặt là mdm app không
+                                                                const isUsedAsMdmApp = configuration.mdmApp == appConfig.application.pkg;
+                                                                if (isUsedAsMdmApp) {
+                                                                    alert(`Ứng dụng "${app.name}" đang được đặt là ứng dụng MDM và không thể xoá.`);
+                                                                    return;
+                                                                }
+
+                                                                // Kiểm tra trong kisok app
+                                                                const isUsedInKiosk = configuration.kioskApps.some((kioskAppPkg) => {
+                                                                    return kioskAppPkg === appConfig.application.pkg;
+                                                                });
+                                                                if (isUsedInKiosk) {
+                                                                    alert(`Ứng dụng "${app.name}" đang được sử dụng trong chế độ kiosk và không thể xoá.`);
+                                                                    return;
+                                                                }
+
+                                                                const newConfigs = applicationConfigs.filter(
+                                                                    (config) => config.application._id !== appConfig.application._id
+                                                                );
+                                                                updateApplicationConfigs(newConfigs);
+                                                            }}
+                                                        >
+                                                            <span class="glyphicon glyphicon-trash"></span>
+                                                        </button>
                                                     </td>
                                                 </tr>
                                             )

@@ -7,6 +7,7 @@ import Loader from "../../../../components/Loader";
 import AddApplicationDialog from "../../../../parts/AddApplicationDialog";
 import EditApplicationDialog from "../../../../parts/EditApplicationDialog";
 import PATH from "../../../../enums/path.enum";
+import applicationService from "../../../../services/application.service";
 
 export default function Application() {
     const navigate = useNavigate();
@@ -37,6 +38,22 @@ export default function Application() {
     const handleEditApplication = (application) => {
         setOpenEditApplicationDialog(true);
         setSelectedApplication(application);
+    }
+
+    const handleDeleteApplication = (application) => {
+        if (window.confirm(`Bạn có chắc chắn muốn xóa ứng dụng ${application.name} không?`)) {
+            applicationService.deleteApplication(application.pkg)
+                .then(() => {
+                    dispatch(fetchApplications({ searchTerm: "" }));
+                })
+                .catch((error) => {
+                    if (error.response && error.response.data) {
+                        alert(`Lỗi: ${error.response.data.message}`);
+                    } else {
+                        alert("Đã xảy ra lỗi khi xóa ứng dụng. Vui lòng thử lại sau.");
+                    }
+                });
+        }
     }
 
     const handleGoToApplicationVersion = (application) => {
@@ -134,10 +151,18 @@ export default function Application() {
                                                     <td>{lastestVersion.versionName}</td>
                                                     <td>{lastestVersion.url ?? ""}</td>
                                                     <td>{config.showIcon ? "+" : ""}</td>
-                                                    <td className={styles.actions}>
-                                                        <button className={styles.edit} onClick={() => handleGoToApplicationVersion(config)}>Phiên bản</button>
-                                                        <button className={styles.copy} onClick={() => handleEditApplication(config)}>Sửa</button>
-                                                        <button className={styles.delete}>Xóa</button>
+                                                    <td className={styles.actionButtons}>
+                                                        <div style={{ display: "flex", gap: 5 }}>
+                                                            <button className={styles.signInButton} onClick={() => handleGoToApplicationVersion(config)}>
+                                                                <span class="glyphicon glyphicon-sound-5-1"></span>
+                                                            </button>
+                                                            <button className={styles.signInButton} onClick={() => handleEditApplication(config)}>
+                                                                <span class="glyphicon glyphicon-pencil"></span>
+                                                            </button>
+                                                            <button className={styles.signInButton} onClick={() => handleDeleteApplication(config)}>
+                                                                <span class="glyphicon glyphicon-trash"></span>
+                                                            </button>
+                                                        </div>
                                                     </td>
                                                 </tr>
                                             )

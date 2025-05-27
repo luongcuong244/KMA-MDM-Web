@@ -15,11 +15,13 @@ const AddApplicationConfigDialog = ({ configuration, isOpen, onClose, onSubmit }
     const dropdownRef = React.useRef();
 
     useEffect(() => {
-        applicationService.getAvailableApplicationForConfig({
-            configId: configuration._id,
-        }).then((response) => {
+        applicationService.getApplications()
+            .then((response) => {
                 if (response.data && response.data.data) {
-                    setApplications([null, ...response.data.data]);
+                    const allApplications = response.data.data;
+                    const configApplications = configuration.applications.map(app => app.application._id.toString());
+                    const availableApplications = allApplications.filter(app => !configApplications.includes(app._id.toString()));
+                    setApplications([null, ...availableApplications]);
                 } else {
                     console.error("No data found in response");
                 }

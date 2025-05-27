@@ -111,16 +111,18 @@ export default function ApplicationVersion() {
                                                                 <td>{version.versionName}</td>
                                                                 <td>{version.versionCode}</td>
                                                                 <td>{version.url}</td>
-                                                                <td className={styles.actions}>
+                                                                <td>
                                                                     <button 
-                                                                    className={styles.delete} 
+                                                                        className={styles.signInButton} 
                                                                     style={{
                                                                         opacity: canNotDelete ? 0.5 : 1,
                                                                         pointerEvents: canNotDelete ? "none" : "auto",
                                                                         cursor: canNotDelete ? "not-allowed" : "pointer"
                                                                     }}
                                                                     onClick={() => handleDeleteVersion(version)}
-                                                                    >Xoá</button>
+                                                                    >
+                                                                        <span class="glyphicon glyphicon-trash"></span>
+                                                                    </button>
                                                                 </td>
                                                             </tr>
                                                         )
