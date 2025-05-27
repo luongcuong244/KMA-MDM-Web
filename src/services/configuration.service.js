@@ -24,6 +24,16 @@ class ConfigurationService {
     async saveConfiguration(data) {
         return axiosApiInstance.post(API_URL + "save-configuration", data);
     }
+
+    async deleteConfiguration(id) {
+        return axiosApiInstance.post(API_URL + "delete-configuration", {
+            id: id,
+        });
+    }
+
+    async copyConfiguration(data) {
+        return axiosApiInstance.post(API_URL + "copy-configuration", data);
+    }
 }
 
 export default new ConfigurationService();

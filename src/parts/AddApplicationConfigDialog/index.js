@@ -15,11 +15,11 @@ const AddApplicationConfigDialog = ({ configuration, isOpen, onClose, onSubmit }
     const dropdownRef = React.useRef();
 
     useEffect(() => {
-        applicationService.getApplications()
+        applicationService.getAvailableApplicationForConfig()
             .then((response) => {
                 if (response.data && response.data.data) {
                     const allApplications = response.data.data;
-                    const configApplications = configuration.applications.map(app => app.application._id.toString());
+                    const configApplications = configuration.applications?.map(app => app.application._id.toString()) || [];
                     const availableApplications = allApplications.filter(app => !configApplications.includes(app._id.toString()));
                     setApplications([null, ...availableApplications]);
                 } else {

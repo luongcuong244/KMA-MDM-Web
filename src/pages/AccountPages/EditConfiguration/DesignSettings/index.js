@@ -247,7 +247,7 @@ export default function DesignSettings({ configuration }) {
                     false
                 )
             }
-            {
+            {/* {
                 renderCheckboxField(
                     "Hiển thị thời gian và trạng thái pin",
                     displayTimeAndBatteryState,
@@ -257,7 +257,7 @@ export default function DesignSettings({ configuration }) {
                     },
                     false
                 )
-            }
+            } */}
             <div className={styles.field} style={{ paddingBottom: 100 }}></div>
         </div>
     );

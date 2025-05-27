@@ -123,7 +123,7 @@ export default function EditConfiguration() {
                             {NavItem("apps", "Ứng dụng")}
                             {NavItem("mdm", "Cài đặt quản lý thiết bị")}
                             {NavItem("app-settings", "Cài đặt cho ứng dụng")}
-                            {NavItem("files", "Tệp đính kèm")}
+                            {/* {NavItem("files", "Tệp đính kèm")} */}
                             <li className={styles.emptyNavLink} style={{ flex: 1 }}></li>
                         </ul>
                         <div className={styles.routes}>
@@ -142,9 +142,9 @@ export default function EditConfiguration() {
                             <div style={{ display: activeTab === "app-settings" ? "flex" : "none" }}>
                                 {appSettingsTab}
                             </div>
-                            <div style={{ display: activeTab === "files" ? "flex" : "none" }}>
+                            {/* <div style={{ display: activeTab === "files" ? "flex" : "none" }}>
                                 {filesTab}
-                            </div>
+                            </div> */}
                         </div>
                         <div className={styles.footer}>
                             <button onClick={clickSave}>Lưu</button>

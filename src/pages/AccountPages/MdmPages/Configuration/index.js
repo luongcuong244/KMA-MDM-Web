@@ -5,6 +5,8 @@ import { fetchConfigurations, selectConfigurations } from "../../../../slices/co
 import Loader from "../../../../components/Loader";
 import { useNavigate } from "react-router-dom";
 import PATH from "../../../../enums/path.enum";
+import configurationService from "../../../../services/configuration.service";
+import CopyConfigurationDialog from "../../../../parts/CopyConfigurationDialog";
 
 export default function Configuration() {
     const navigate = useNavigate();
@@ -12,6 +14,8 @@ export default function Configuration() {
     const configurations = useSelector(selectConfigurations);
 
     const [searchTerm, setSearchTerm] = useState("");
+    const [showCopyDialog, setShowCopyDialog] = useState(false);
+    const [selectedConfiguration, setSelectedConfiguration] = useState(null);
 
     useEffect(() => {
         // Fetch configurations from the server
@@ -28,6 +32,28 @@ export default function Configuration() {
 
     const handleAddConfiguration = () => {
         navigate(PATH.editConfiguration.replace(":id", "new"));
+    }
+
+    const handleDeleteConfiguration = (configuration) => {
+        const confirmDelete = window.confirm(`Bạn có chắc chắn muốn xóa cấu hình "${configuration.name}"?`);
+        if (!confirmDelete) {
+            return;
+        }
+        configurationService.deleteConfiguration(configuration._id)
+            .then(() => {
+                // Refresh the configurations after deletion
+                dispatch(fetchConfigurations({ searchTerm: "" }));
+            })
+            .catch((error) => {
+                if (error.response && error.response.data) {
+                    alert(error.response.data.message || "Lỗi khi xóa cấu hình");
+                }
+            });
+    }
+
+    const handleCopyConfiguration = (configuration) => {
+        setSelectedConfiguration(configuration);
+        setShowCopyDialog(true);
     }
 
     return (
@@ -59,10 +85,18 @@ export default function Configuration() {
                                     <tr key={config.id}>
                                         <td>{config.name}</td>
                                         <td>{config.description}</td>
-                                        <td className={styles.actions}>
-                                            <button className={styles.edit} onClick={() => handleEditConfiguration(config)}>Sửa</button>
-                                            <button className={styles.delete}>Xóa</button>
-                                            <button className={styles.copy}>Sao chép</button>
+                                        <td>
+                                            <div style={{ display: "flex", gap: 5 }}>
+                                                <button className={styles.signInButton} onClick={() => handleEditConfiguration(config)}>
+                                                    <span class="glyphicon glyphicon-pencil"></span>
+                                                </button>
+                                                <button className={styles.signInButton} onClick={() => handleDeleteConfiguration(config)}>
+                                                    <span class="glyphicon glyphicon-trash"></span>
+                                                </button>
+                                                <button className={styles.signInButton} onClick={() => handleCopyConfiguration(config)}>
+                                                    <span class="glyphicon glyphicon-duplicate"></span>
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))}
@@ -89,6 +123,18 @@ export default function Configuration() {
                     <div className={styles.error}>
                         <span className={styles.errorText}>{configurations.errorMessage}</span>
                     </div>
+                )
+            }
+            {
+                showCopyDialog && selectedConfiguration && (
+                    <CopyConfigurationDialog
+                        configuration={selectedConfiguration}
+                        isOpen={showCopyDialog}
+                        onClose={() => setShowCopyDialog(false)}
+                        onSubmit={() => {
+                            dispatch(fetchConfigurations({ searchTerm: "" }));
+                        }}
+                    />
                 )
             }
         </div>
