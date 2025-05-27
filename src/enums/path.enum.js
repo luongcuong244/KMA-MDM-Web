@@ -12,6 +12,9 @@ const PATH = {
   pushMessage: "/push-messages",
   remoteControl: "/remote-control",
   systemCommand: "/system-command",
+
+  // for admin pages
+  deviceManager: "/device-manager",
 };
 
 export default PATH;

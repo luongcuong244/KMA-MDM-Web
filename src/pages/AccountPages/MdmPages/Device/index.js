@@ -170,7 +170,7 @@ export default function Device() {
             }
             {
                 devices.length === 0 && !loading && (
-                    <span className={styles.noData}>Không cấu hình nào được tìm thấy</span>
+                    <span className={styles.noData}>Không thiết bị nào được tìm thấy</span>
                 )
             }
             {

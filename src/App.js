@@ -74,14 +74,14 @@ function App() {
               path={"/*"}
               element={user?._id ? <AccountPages /> : <SignInPage />}
             />
-            <Route 
+            {/* <Route 
               path={`${PATH.admin}/*`}
               element={
                 user?.userId ?
                   (user?.role === ROLE.admin) ? <AdminPages /> : <GoToHomePage message={"Bạn không có quyền truy cập trang này!"} />
                   : <NeedSignInPage />
               }
-            />
+            /> */}
             <Route path="*" element={<Navigate to={"/"} />} />
           </Routes>
         </>

@@ -127,7 +127,7 @@ const SignInPage = () => {
       </div>
       <AlertDialog
         title={"Thông báo"}
-        message={"Bạn cần liên hệ với chủ quán để đổi mật khẩu!"}
+        message={"Liên hệ với Admin để đổi mật khẩu!"}
         isOpen={openDialog}
         onClickPositiveButton={() => {
           setOpenDialog(false);

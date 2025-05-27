@@ -22,6 +22,29 @@ class UserService {
       newPassword: newPassword,
     });
   }
+
+  async getAllUsers() {
+    return axiosApiInstance.get(API_URL + "get-all-users");
+  }
+
+  async createUser(user) {
+    return axiosApiInstance.post(API_URL + "create-user", user);
+  }
+  async updateUser(user) {
+    return axiosApiInstance.post(API_URL + "update-user", user);
+  }
+
+  async changeUserPassword(data) {
+    return axiosApiInstance.post(API_URL + "change-user-password", data);
+  }
+
+  async lockUser(data) {
+    return axiosApiInstance.post(API_URL + "lock-user", data);
+  }
+
+  async unlockUser(userId) {
+    return axiosApiInstance.post(API_URL + "unlock-user", { userId: userId });
+  }
 }
 
 export default new UserService();

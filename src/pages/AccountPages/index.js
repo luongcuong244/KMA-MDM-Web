@@ -12,6 +12,7 @@ import authService from "../../services/auth.service";
 import MdmPages from "./MdmPages";
 import ApplicationVersion from "./ApplicationVersion";
 import EditConfiguration from "./EditConfiguration";
+import ROLE from "../../enums/role.enum";
 
 const cookies = new Cookies();
 
@@ -71,8 +72,14 @@ const AccountPages = () => {
         <Route path={"/*"} element={<MdmPages />} />
         <Route path={PATH.about} element={<About />} />
         <Route path={PATH.profile} element={<Profile />} />
-        <Route path={PATH.applicationVersion} element={<ApplicationVersion />} />
-        <Route path={PATH.editConfiguration} element={<EditConfiguration />} />
+        {
+          user?.role === ROLE.admin && (
+            <>
+              <Route path={PATH.applicationVersion} element={<ApplicationVersion />} />
+              <Route path={PATH.editConfiguration} element={<EditConfiguration />} />
+            </>
+          )
+        }
         <Route path="*" element={<Navigate to={"/"} />} />
       </Routes>
     </div>

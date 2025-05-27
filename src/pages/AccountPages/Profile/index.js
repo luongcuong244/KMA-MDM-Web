@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./profile.module.scss";
 import { useSelector } from "react-redux";
 import { selectUser } from "../../../slices/user.slice";
@@ -7,12 +7,27 @@ import AlertError from "../../../components/AlertError";
 import userService from "../../../services/user.service";
 
 export default function Profile() {
-    const user = useSelector(selectUser);
+    const [user, setUser] = useState(useSelector(selectUser));
     const [waitingForServer, setWaitingForServer] = useState(false);
     const [oldPassword, setOldPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [warning, setWarning] = useState("");
+
+    useEffect(() => {
+        userService.getCurrentUser()
+            .then((res) => {
+                if (res) {
+                    setUser(res);
+                } else {
+                    setWarning("Không thể lấy thông tin người dùng. Vui lòng đăng nhập lại.");
+                }
+            })
+            .catch((error) => {
+                console.error("Error fetching user data:", error);
+                setWarning("Đã có lỗi xảy ra khi lấy thông tin người dùng. Vui lòng thử lại sau.");
+            });
+    }, []);
 
     const handleOldPasswordChange = (event) => {
         setOldPassword(event.target.value);
@@ -105,11 +120,11 @@ export default function Profile() {
                 renderLabelField("Vai trò", user.role)
             }
             {
-                renderLabelField("Giới hạn thiết bị", "1 / 3")
+                renderLabelField("Giới hạn thiết bị", `${user.managedDevicesCount ?? "-"} / ${user.maxManagedDevices ?? "-"}`)
             }
-            {
+            {/* {
                 renderLabelField("Giới hạn bộ nhớ", "45 / 100 GB")
-            }
+            } */}
             <div className={styles.field} style={{ justifyContent: "end", paddingLeft: 32 }}>
                 <div style={{ width: "70%" }}>
                     <p className={styles.title}>Đổi mật khẩu</p>

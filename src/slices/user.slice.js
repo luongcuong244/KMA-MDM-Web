@@ -7,6 +7,8 @@ export const userSlice = createSlice({
     userName: null,
     role: null,
     isBlocked: false,
+    maxManagedDevices: null,
+    managedDevicesCount: null,
   },
   reducers: {
     setUser: (state, action) => {
@@ -14,6 +16,8 @@ export const userSlice = createSlice({
       state.userName = action.payload?.userName;
       state.role = action.payload?.role;
       state.isBlocked = action.payload?.isBlocked;
+      state.maxManagedDevices = action.payload?.maxManagedDevices;
+      state.managedDevicesCount = action.payload?.managedDevicesCount;
     },
   },
 });
