@@ -73,7 +73,7 @@ const AccountPages = () => {
         <Route path={PATH.about} element={<About />} />
         <Route path={PATH.profile} element={<Profile />} />
         {
-          user?.role === ROLE.admin && (
+          user?.role !== ROLE.admin && (
             <>
               <Route path={PATH.applicationVersion} element={<ApplicationVersion />} />
               <Route path={PATH.editConfiguration} element={<EditConfiguration />} />
