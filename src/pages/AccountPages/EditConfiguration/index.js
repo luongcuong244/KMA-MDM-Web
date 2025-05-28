@@ -76,6 +76,11 @@ export default function EditConfiguration() {
             setActiveTab("mdm");
             return;
         }
+        if (!configuration.mdmChecksum) {
+            setError("Checksum của ứng dụng quản lý thiết bị không được để trống");
+            setActiveTab("mdm");
+            return;
+        }
         if (!configuration.adminReceiverClass) {
             setError("Admin Receiver Class không được để trống");
             setActiveTab("mdm");

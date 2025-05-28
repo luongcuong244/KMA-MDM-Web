@@ -9,6 +9,7 @@ export default function MdmSettings({ configuration }) {
     const [searchTermMdmApp, setSearchTermMdmApp] = React.useState(configuration.mdmApp || "");
     const [showDropdownMdmApp, setShowDropdownMdmApp] = React.useState(false);
 
+    const [mdmChecksum, setMdmChecksum] = React.useState(configuration.mdmChecksum || "");
     const [adminReceiverClass, setAdminReceiverClass] = React.useState(configuration.adminReceiverClass || "");
 
     const [selectedKioskApps, setSelectedKioskApps] = React.useState([]);
@@ -299,6 +300,19 @@ export default function MdmSettings({ configuration }) {
                         setSearchTermMdmApp(app.name);
                         setShowDropdownMdmApp(false);
                     }
+                )
+            }
+            {
+                renderTextInputField(
+                    "text",
+                    "Checksum ứng dụng MDM",
+                    "Nhập checksum ứng dụng MDM - mã hóa base64 của mã SHA256 của APK",
+                    mdmChecksum,
+                    (e) => {
+                        setMdmChecksum(e.target.value);
+                        configuration.mdmChecksum = e.target.value;
+                    },
+                    false
                 )
             }
             {
