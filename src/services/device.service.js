@@ -16,6 +16,14 @@ class DeviceService {
             }
         });
     }
+
+    async getDeviceByIdForRemoteControl(deviceId) {
+        return axiosApiInstance.get(API_URL + "get-device-by-id-for-remote-control", {
+            params: {
+                deviceId: deviceId
+            }
+        });
+    }
     
     async addNewDevice(data) {
         return axiosApiInstance.post(API_URL + "add-new-device", data);

@@ -4,6 +4,8 @@ import socketRemote from "../../../../socket/socketRemote";
 import { WebRTC } from "../../../../utils/webrtc";
 import deviceService from "../../../../services/device.service";
 import Loader from "../../../../components/Loader";
+import socket from "../../../../socket/socket";
+import { set } from "date-fns";
 
 function log(level, message, context = {}) {
     console.log(`[${level}] ${message}`, context);
@@ -38,6 +40,24 @@ export default function RemoteControl() {
     const uiElementsRef = useRef(null)
 
     useEffect(() => {
+        socket.connect();
+        socket.on("connect", () => {
+            console.log("Socket connected");
+        })
+        socket.on("web:receive:accept_remote_control", (data) => {
+            if (data.status === "success") {
+                const { deviceId } = data;
+                // join stream
+                webRTC.current.joinStream(deviceId, "password");
+                
+                uiElementsRef.current.remoteLoader.style.display = 'none';
+            } else {
+                setError(data.message || "Không thể kết nối đến máy chủ điều khiển từ xa");
+                uiElementsRef.current.remoteContainer.style.display = 'none';
+                uiElementsRef.current.remoteLoader.style.display = 'none';
+            }
+        })
+
         webRTC.current = new WebRTC("client-id", streamState.current, onNewTrack);
         webRTC.current.waitForServerOnlineAndConnect();
 
@@ -70,6 +90,10 @@ export default function RemoteControl() {
                 webRTC.current.disconnectSocket();
             }
             window.removeEventListener('beforeunload', beforeUnloadHandler);
+
+            socket.off("connect");
+            socket.off("web:receive:accept_remote_control");
+            socket.disconnect();
         }
     }, [])
 
@@ -182,28 +206,47 @@ export default function RemoteControl() {
         }
         uiElementsRef.current.remoteContainer.style.display = 'block';
         uiElementsRef.current.remoteLoader.style.display = 'flex';
-        deviceService.getDeviceById(deviceId)
+        deviceService.getDeviceByIdForRemoteControl(deviceId)
             .then((res) => {
                 if (res.status === 200) {
-                    setDevice(res.data.data);
+                    const device = res.data.data;
+                    setDevice(device);
                     setError("");
-                    // join stream
-                    webRTC.current.joinStream(deviceId, "password");
 
-                    console.log("Full screen size: ", device.fullScreenWidth, " x ",device.fullScreenHeight);
-                    console.log("Display size: ", device.displayScreenWidth, " x ",device.displayScreenHeight);
-                    console.log("Status bar height: ", device.statusBarHeight);
-                    console.log("Navigation bar height: ", device.navigationBarHeight);
+                    const { deviceInfo } = device;
+                    console.log("Full screen size: ", deviceInfo.fullScreenWidth, " x ", deviceInfo.fullScreenHeight);
+                    console.log("Display size: ", deviceInfo.displayScreenWidth, " x ", deviceInfo.displayScreenHeight);
+                    console.log("Status bar height: ", deviceInfo.statusBarHeight);
+                    console.log("Navigation bar height: ", deviceInfo.navigationBarHeight);
+
+                    if (socket.connected) {
+                        console.log("Requesting remote control for device:", deviceId);
+                        socket.emit("web:send:request_remote_control", {
+                            deviceId: deviceId,
+                        }, (response) => {
+                            if (response.status == "error") {
+                                setError(response.message || "Không thể kết nối đến máy chủ điều khiển từ xa");
+                                uiElementsRef.current.remoteContainer.style.display = 'none';
+                                uiElementsRef.current.remoteLoader.style.display = 'none';
+                            } else {
+                                // wait for the stream to be ready
+                            }
+                        })
+                    } else {
+                        setError("Không thể kết nối đến máy chủ điều khiển từ xa");
+                    }
                 } else {
                     setError("Thiết bị chưa được thêm hoặc đang không hoạt động");
                 }
             })
             .catch((err) => {
                 console.log(err);
-                setError("Thiết bị chưa được thêm hoặc đang không hoạt động");
+                if (err.response && err.response.data && err.response.data.message) {
+                    setError(err.response.data.message);
+                } else {
+                    setError("Thiết bị chưa được thêm hoặc đang không hoạt động");
+                }
                 uiElementsRef.current.remoteContainer.style.display = 'none';
-            })
-            .finally(() => {
                 uiElementsRef.current.remoteLoader.style.display = 'none';
             });
     };
@@ -236,7 +279,7 @@ export default function RemoteControl() {
                     webRTC.current.leaveStream(true);
                 }}>Ngắt kết nối</button>
                 <div id={"remote-loader"} className={styles.loaderContainer}>
-                    <Loader color="#535353" width="45px" />
+                    <Loader color="#ffffff" width="45px" />
                 </div>
             </div>
         </div>
