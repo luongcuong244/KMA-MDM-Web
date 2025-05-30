@@ -28,6 +28,8 @@ export default function RemoteControl() {
             isStreamJoined: false,
             isStreamRunning: false,
             error: null,
+            isRemoteControlEnabled: false,
+            readyForRemoteControl: false,
         }, {
             set(target, key, value) {
                 const oldValue = target[key];
@@ -46,15 +48,11 @@ export default function RemoteControl() {
         })
         socket.on("web:receive:accept_remote_control", (data) => {
             if (data.status === "success") {
-                const { deviceId } = data;
-                // join stream
-                webRTC.current.joinStream(deviceId, "password");
-                
-                uiElementsRef.current.remoteLoader.style.display = 'none';
+                streamState.current.readyForRemoteControl = true;
             } else {
                 setError(data.message || "Không thể kết nối đến máy chủ điều khiển từ xa");
-                uiElementsRef.current.remoteContainer.style.display = 'none';
-                uiElementsRef.current.remoteLoader.style.display = 'none';
+                streamState.current.readyForRemoteControl = false;
+                streamState.current.isRemoteControlEnabled = false;
             }
         })
 
@@ -65,7 +63,9 @@ export default function RemoteControl() {
             startContainer: document.getElementById('start-container'),
             streamIdInput: document.getElementById('stream-id'),
             passwordInput: document.getElementById('stream-password'),
+            joinStreamContainer: document.getElementById('join-stream-container'),
             streamJoinButton: document.getElementById('streamJoinButton'),
+            streamJoinErrorMessage: document.getElementById('streamJoinErrorMessage'),
             joinButtonLoader: document.getElementById('joinButtonLoader'),
             streamJoinCell: document.getElementById('stream-join'),
             streamErrorCell: document.getElementById('stream-error'),
@@ -77,6 +77,8 @@ export default function RemoteControl() {
             videoElement: document.getElementById('video-element'),
             remoteContainer: document.getElementById('remote-container'),
             remoteLoader: document.getElementById('remote-loader'),
+            leaveStreamButton: document.getElementById('leave-stream-button'),
+            closeButton: document.getElementById('close-button'),
         };
 
         const beforeUnloadHandler = () => {
@@ -115,43 +117,53 @@ export default function RemoteControl() {
 
         UIElements.joinButtonLoader?.style && (UIElements.joinButtonLoader.style.display = (!state.isServerAvailable || (state.isServerAvailable && state.isTokenAvailable) || state.isJoiningStream) ? 'block' : 'none');
 
-        UIElements.streamJoinButton?.style && (UIElements.streamJoinButton.style.display = (state.isSocketConnected && !state.isJoiningStream) ? 'table-cell' : 'none');
+        UIElements.remoteLoader?.style && (UIElements.remoteLoader.style.display = (state.isRemoteControlEnabled && !state.readyForRemoteControl) ? 'flex' : 'none');
+
+        UIElements.streamJoinButton?.style && (UIElements.streamJoinButton.style.display = (state.isSocketConnected && !state.isJoiningStream && !state.isStreamRunning) ? 'table-cell' : 'none');
 
         UIElements.streamErrorCell?.style && (UIElements.streamErrorCell.style.display = (state.error) ? 'block' : 'none');
+        UIElements.streamJoinErrorMessage?.style && (UIElements.streamJoinErrorMessage.style.display = (state.error) ? 'block' : 'none');
 
-        UIElements.remoteContainer?.style && (UIElements.remoteContainer.style.display = (state.isStreamRunning) ? 'block' : 'none');
+        UIElements.leaveStreamButton?.style && (UIElements.leaveStreamButton.style.display = (state.isStreamRunning) ? 'block' : 'none');
+
+        UIElements.closeButton?.style && (UIElements.closeButton.style.display = (state.isRemoteControlEnabled && !state.isStreamRunning) ? 'block' : 'none');
+
+        UIElements.remoteContainer?.style && (UIElements.remoteContainer.style.display = (state.isRemoteControlEnabled) ? 'block' : 'none');
 
         if (state.error) {
-            uiElementsRef.current.remoteContainer.style.display = 'none';
-
             const errorCell = UIElements.streamErrorCell;
             const joinCell = UIElements.streamJoinCell;
             const joinButton = UIElements.streamJoinButton;
             const loader = UIElements.joinButtonLoader;
+            const streamJoinErrorMessage = UIElements.streamJoinErrorMessage;
 
             switch (state.error) {
                 case 'ERROR:TURNSTILE:200100':
-                    setError("Incorrect device clock time. Please adjust and reload the page.")    
-
+                    // setError("Incorrect device clock time. Please adjust and reload the page.")    
+                    streamJoinErrorMessage && (streamJoinErrorMessage.innerText = 'Incorrect device clock time. Please adjust and reload the page.');
                     errorCell && (errorCell.innerText = 'Incorrect device clock time. Please adjust and reload the page.');
                     joinCell?.style && (joinCell.style.display = 'none');
                     joinButton?.style && (joinButton.style.display = 'none');
                     loader?.style && (loader.style.display = 'none');
                     break;
                 case 'ERROR:WRONG_STREAM_ID':
-                    setError("Thiết bị chưa được thêm hoặc đang không hoạt động ( Wrong stream id )");
+                    // setError("Thiết bị chưa được thêm hoặc đang không hoạt động ( Wrong stream id )");
+                    streamJoinErrorMessage && (streamJoinErrorMessage.innerText = 'Thiết bị chưa được thêm hoặc đang không hoạt động ( Wrong stream id )');
                     errorCell && (errorCell.innerText = 'Wrong stream id');
                     break;
                 case 'ERROR:NO_STREAM_HOST_FOUND':
-                    setError("Thiết bị chưa được thêm hoặc đang không hoạt động ( Stream not found )");
+                    // setError("Thiết bị chưa được thêm hoặc đang không hoạt động ( Stream not found )");
+                    streamJoinErrorMessage && (streamJoinErrorMessage.innerText = 'Thiết bị chưa được thêm hoặc đang không hoạt động ( Stream not found )');
                     errorCell && (errorCell.innerText = 'Stream not found');
                     break;
                 case 'ERROR:WRONG_STREAM_PASSWORD':
-                    setError("Sai mật khẩu stream");
+                    // setError("Sai mật khẩu stream");
+                    streamJoinErrorMessage && (streamJoinErrorMessage.innerText = 'Sai mật khẩu stream');
                     errorCell && (errorCell.innerText = 'Wrong stream password');
                     break;
                 default:
-                    setError("Có lỗi xảy ra. Vui lòng tải lại trang và thử lại");
+                    // setError("Có lỗi xảy ra. Vui lòng tải lại trang và thử lại");
+                    streamJoinErrorMessage && (streamJoinErrorMessage.innerText = "Có lỗi xảy ra. Vui lòng tải lại trang và thử lại");
                     errorCell && (errorCell.innerText = 'Something went wrong. Reload this page and try again.' + `\n[${state.error}]\n\n`);
                     joinCell?.style && (joinCell.style.display = 'none');
                     joinButton?.style && (joinButton.style.display = 'none');
@@ -204,8 +216,8 @@ export default function RemoteControl() {
             setError("Vui lòng nhập mã thiết bị");
             return;
         }
-        uiElementsRef.current.remoteContainer.style.display = 'block';
-        uiElementsRef.current.remoteLoader.style.display = 'flex';
+        streamState.current.readyForRemoteControl = false;
+        streamState.current.isRemoteControlEnabled = true;
         deviceService.getDeviceByIdForRemoteControl(deviceId)
             .then((res) => {
                 if (res.status === 200) {
@@ -225,29 +237,29 @@ export default function RemoteControl() {
                             deviceId: deviceId,
                         }, (response) => {
                             if (response.status == "error") {
+                                streamState.current.isRemoteControlEnabled = false;
                                 setError(response.message || "Không thể kết nối đến máy chủ điều khiển từ xa");
-                                uiElementsRef.current.remoteContainer.style.display = 'none';
-                                uiElementsRef.current.remoteLoader.style.display = 'none';
                             } else {
                                 // wait for the stream to be ready
                             }
                         })
                     } else {
+                        streamState.current.isRemoteControlEnabled = false;
                         setError("Không thể kết nối đến máy chủ điều khiển từ xa");
                     }
                 } else {
+                    streamState.current.isRemoteControlEnabled = false;
                     setError("Thiết bị chưa được thêm hoặc đang không hoạt động");
                 }
             })
             .catch((err) => {
                 console.log(err);
+                streamState.current.isRemoteControlEnabled = false;
                 if (err.response && err.response.data && err.response.data.message) {
                     setError(err.response.data.message);
                 } else {
                     setError("Thiết bị chưa được thêm hoặc đang không hoạt động");
                 }
-                uiElementsRef.current.remoteContainer.style.display = 'none';
-                uiElementsRef.current.remoteLoader.style.display = 'none';
             });
     };
 
@@ -275,11 +287,22 @@ export default function RemoteControl() {
                 <div id={"video-container"} style={{ display: 'none' }}>
                     <video id={"video-element"} muted autoPlay playsInline controls></video>
                 </div>
-                <button className={styles.leaveStreamButton} onClick={() => {
+                <button id={"leave-stream-button"} className={styles.leaveStreamButton} onClick={() => {
                     webRTC.current.leaveStream(true);
                 }}>Ngắt kết nối</button>
+                <button id={"close-button"} className={styles.leaveStreamButton} onClick={() => {
+                    webRTC.current.leaveStream(true);
+                    streamState.current.isRemoteControlEnabled = false;
+                }}>Đóng</button>
                 <div id={"remote-loader"} className={styles.loaderContainer}>
                     <Loader color="#ffffff" width="45px" />
+                </div>
+                <div id={"join-stream-container"} className={styles.joinStreamContainer}>
+                    <span id={"streamJoinErrorMessage"} className={styles.errorMessage}></span>
+                    <button id={"streamJoinButton"} className={styles.joinStreamButton} onClick={() => {
+                        // join stream
+                        webRTC.current.joinStream(deviceId, "password");
+                    }}>Bắt đầu điều khiển thiết bị</button>
                 </div>
             </div>
         </div>
