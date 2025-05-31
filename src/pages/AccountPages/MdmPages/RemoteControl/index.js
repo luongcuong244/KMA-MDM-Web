@@ -1,11 +1,10 @@
 import React, { useEffect, useState, useRef } from "react";
 import styles from "./remote_control.module.scss";
-import socketRemote from "../../../../socket/socketRemote";
 import { WebRTC } from "../../../../utils/webrtc";
 import deviceService from "../../../../services/device.service";
 import Loader from "../../../../components/Loader";
 import socket from "../../../../socket/socket";
-import { set } from "date-fns";
+import { DeviceGestureHandler } from "../../../../utils/device.gesture.handler";
 
 function log(level, message, context = {}) {
     console.log(`[${level}] ${message}`, context);
@@ -18,6 +17,7 @@ export default function RemoteControl() {
     const [deviceId, setDeviceId] = useState(null);
 
     const webRTC = useRef(null);
+    const deviceGestureHandler = useRef(null);
     const streamState = useRef(
         new Proxy({
             isServerAvailable: false,
@@ -231,6 +231,11 @@ export default function RemoteControl() {
                     console.log("Status bar height: ", deviceInfo.statusBarHeight);
                     console.log("Navigation bar height: ", deviceInfo.navigationBarHeight);
 
+                    initDeviceGestureHandler(
+                        deviceInfo.fullScreenWidth,
+                        deviceInfo.fullScreenHeight
+                    );
+
                     if (socket.connected) {
                         console.log("Requesting remote control for device:", deviceId);
                         socket.emit("web:send:request_remote_control", {
@@ -262,6 +267,34 @@ export default function RemoteControl() {
                 }
             });
     };
+
+    const initDeviceGestureHandler = (fullScreenDeviceWidth, fullScreenDeviceHeight) => {
+        if (deviceGestureHandler.current) {
+            deviceGestureHandler.current.clearAllListeners();
+        }
+
+        const videoElement = document.getElementById('video-container');
+        if (!videoElement) {
+            console.error("Video element not found");
+            return;
+        }
+
+        console.log("Initializing DeviceGestureHandler with full screen size: ", fullScreenDeviceWidth, " x ", fullScreenDeviceHeight);
+
+        deviceGestureHandler.current = new DeviceGestureHandler(videoElement, fullScreenDeviceWidth, fullScreenDeviceHeight);
+        deviceGestureHandler.current.setOnClick(
+            (x, y) => {
+                console.log(`Click at: ${x}, ${y}`);
+                webRTC.current.sendClickEvent(x, y);
+            }
+        );
+        deviceGestureHandler.current.setOnSwipe(
+            (start, end, duration) => {
+                console.log(`Swipe from: ${start.x}, ${start.y} to ${end.x}, ${end.y} in ${duration}ms`);
+                webRTC.current.sendSwipeEvent(start, end, duration);
+            }
+        );
+    }
 
     return (
         <div id={styles.root}>
