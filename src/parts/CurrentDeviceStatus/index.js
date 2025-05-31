@@ -3,9 +3,11 @@ import styles from "./current_device_status.module.scss";
 import clsx from "clsx";
 import socket from "../../socket/socket";
 import Converter from "../../utils/converter";
+import Loader from "../../components/Loader";
 
 const CurrentDeviceStatus = ({ isOpen, onClose, deviceId }) => {
     const [isExiting, setIsExiting] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState("");
     const [showDeviceInfo, setShowDeviceInfo] = useState(false);
     const [deviceStatus, setDeviceStatus] = useState(null);
@@ -13,25 +15,29 @@ const CurrentDeviceStatus = ({ isOpen, onClose, deviceId }) => {
     useEffect(() => {
         socket.connect();
         socket.on("connect", () => {
-            socket.emit("web:send:view_device_status", {
+            console.log("Connected to socket server");
+            socket.timeout(6000).emit("web:send:view_device_status", {
                 deviceId: deviceId,
+            }, (error, response) => {
+                if (error) {
+                    setError(error.message || "Lỗi không xác định");
+                    setIsLoading(false);
+                    return;
+                }
+                if (response.status === "error") {
+                    setError(response.message || "Lỗi không xác định");
+                    setIsLoading(false);
+                    return;
+                } else if (response.status === "success" && response.data) {
+                    console.log("deviceStatus", response.data);
+                    setError("");
+                    setDeviceStatus(response.data);
+                    setIsLoading(false);
+                } else {
+                    setError("Lỗi không xác định");
+                    setIsLoading(false);
+                }
             });
-        });
-        socket.on("web:receive:device_status", (data) => {
-            if (!data) {
-                setError("Không có dữ liệu");
-                return;
-            }
-            if (data.status === "error") {
-                setError(data.message || "Lỗi không xác định");
-                return; 
-            } else if (data.status === "success" && data.data && data.data.deviceStatus) {
-                console.log("deviceStatus", data.data.deviceStatus);
-                setError("");
-                setDeviceStatus(data.data.deviceStatus);
-            } else {
-                setError("Lỗi không xác định");
-            }
         });
         return () => {
             socket.off("connect");
@@ -80,10 +86,17 @@ const CurrentDeviceStatus = ({ isOpen, onClose, deviceId }) => {
             <div className={clsx(styles.dialog, isExiting ? styles.dialogExit : styles.dialogEnter)}>
                 <label className={styles.title}>Trạng thái thiết bị hiện tại</label>
                 {
-                    error && <label className={styles.error}>{error}</label>
+                    !isLoading && error && <label className={styles.error}>{error}</label>
                 }
                 {
-                    !error && deviceStatus && (
+                    isLoading && (
+                        <div className={styles.loaderContainer}>
+                            <Loader />
+                        </div>
+                    )
+                }
+                {
+                    !isLoading && !error && deviceStatus && (
                         <div className={styles.dialogContent}>
                             {
                                 renderTextField(
