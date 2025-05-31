@@ -3,12 +3,16 @@ import styles from "./system_command.module.scss";
 import socket from "../../../../socket/socket";
 import deviceService from "../../../../services/device.service";
 import Converter from "../../../../utils/converter";
+import ChangeDevicePasswordDialog from "../../../../parts/ChangeDevicePasswordDialog";
+import { set } from "date-fns";
 
 export default function SystemCommand() {
     const [error, setError] = useState("");
     const [message, setMessage] = useState("");
     const [deviceId, setDeviceId] = useState(null);
     const [device, setDevice] = useState(null);
+
+    const [showChangeDevicePasswordDialog, setShowChangeDevicePasswordDialog] = useState(false);
 
     useEffect(() => {
         socket.connect();
@@ -63,6 +67,11 @@ export default function SystemCommand() {
     }
 
     const clickChangePassword = () => {
+        if (device) {
+            setShowChangeDevicePasswordDialog(true);
+        } else {
+            setError("Vui lòng tìm kiếm thiết bị trước");
+        }
     }
 
     const clickReboot = () => {
@@ -149,6 +158,37 @@ export default function SystemCommand() {
                             <button className={styles.searchButton} onClick={clickLock}>{device.lock ? "Mở khóa" : "Khóa máy"}</button>
                             <button className={styles.searchButton} onClick={clickFactoryReset}>Khôi phục cài đặt gốc</button>
                         </div>
+                        {
+                            showChangeDevicePasswordDialog && (
+                                <ChangeDevicePasswordDialog
+                                    device={device}
+                                    onClose={() => setShowChangeDevicePasswordDialog(false)}
+                                    isOpen={showChangeDevicePasswordDialog}
+                                    onSubmit={(newPassword) => {
+                                        socket.timeout(3000).emit(
+                                            "web:send:change_device_password", 
+                                            { deviceId, newPassword },
+                                            (error, response) => {
+                                                if (error) {
+                                                    setError("Không có phản hồi từ máy chủ ( timeout 3000ms )");
+                                                    return;
+                                                }
+                                                if (response.status === "error") {
+                                                    setError(response.message);
+                                                    setMessage("");
+                                                } else if (response.status === "success") {
+                                                    setError("");
+                                                    setMessage(response.message);
+                                                } else {
+                                                    setError("Không có phản hồi từ máy chủ");
+                                                    setMessage("");
+                                                }
+                                            }
+                                        );
+                                    }}
+                                />
+                            )
+                        }
                     </>
                 )
             }
