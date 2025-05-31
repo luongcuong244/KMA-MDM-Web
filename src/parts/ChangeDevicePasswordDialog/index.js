@@ -1,8 +1,6 @@
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 import styles from "./change_device_password_dialog.module.scss";
 import clsx from "clsx";
-import userService from "../../services/user.service";
-import deviceService from "../../services/device.service";
 
 const ChangeDevicePasswordDialog = ({ device, isOpen, onClose, onSubmit }) => {
     const [isExiting, setIsExiting] = useState(false);
@@ -13,8 +11,8 @@ const ChangeDevicePasswordDialog = ({ device, isOpen, onClose, onSubmit }) => {
     if (!isOpen) return null;
 
     const handleSubmit = (e) => {
-        if (!newPassword.trim()) {
-            setError("Vui lòng nhập mật khẩu mới");
+        if (newPassword.trim().length < 4) {
+            setError("Mật khẩu mới phải có ít nhất 4 ký tự");
             return;
         }
         setError("");
