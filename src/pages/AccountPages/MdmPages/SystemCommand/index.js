@@ -5,6 +5,7 @@ import deviceService from "../../../../services/device.service";
 import Converter from "../../../../utils/converter";
 import ChangeDevicePasswordDialog from "../../../../parts/ChangeDevicePasswordDialog";
 import { set } from "date-fns";
+import LockDeviceDialog from "../../../../parts/LockDeviceDialog";
 
 export default function SystemCommand() {
     const [error, setError] = useState("");
@@ -13,6 +14,7 @@ export default function SystemCommand() {
     const [device, setDevice] = useState(null);
 
     const [showChangeDevicePasswordDialog, setShowChangeDevicePasswordDialog] = useState(false);
+    const [showLockDeviceDialog, setShowLockDeviceDialog] = useState(false);
 
     useEffect(() => {
         socket.connect();
@@ -85,7 +87,35 @@ export default function SystemCommand() {
     }
 
     const clickLock = () => {
-
+        if (device) {
+            if (device.lock) {
+                if (window.confirm(`Bạn có chắc chắn muốn mở khoá thiết bị "${deviceId}" không?`) === true) {
+                    socket.timeout(3000).emit("web:send:unlock_device", { deviceId }, (error, response) => {
+                        if (error) {
+                            setError("Không có phản hồi từ máy chủ ( timeout 3000ms )");
+                            return;
+                        }
+                        if (response.status === "error") {
+                            setError(response.message);
+                            setMessage("");
+                        } else if (response.status === "success") {
+                            setError("");
+                            setMessage(response.message);
+                            setDevice(response.device); // Update device state with the new lock status
+                        } else {
+                            setError("Không có phản hồi từ máy chủ");
+                            setMessage("");
+                        }
+                    })
+                } else {
+                    return;
+                }
+            } else {
+                setShowLockDeviceDialog(true);
+            }
+        } else {
+            setError("Vui lòng tìm kiếm thiết bị trước");
+        }
     }
 
     const clickFactoryReset = () => {
@@ -179,6 +209,37 @@ export default function SystemCommand() {
                                                 } else if (response.status === "success") {
                                                     setError("");
                                                     setMessage(response.message);
+                                                } else {
+                                                    setError("Không có phản hồi từ máy chủ");
+                                                    setMessage("");
+                                                }
+                                            }
+                                        );
+                                    }}
+                                />
+                            )
+                        }
+                        {
+                            showLockDeviceDialog && (
+                                <LockDeviceDialog
+                                    isOpen={showLockDeviceDialog}
+                                    onClose={() => setShowLockDeviceDialog(false)}
+                                    onSubmit={(lockMessage) => {
+                                        socket.timeout(3000).emit(
+                                            "web:send:lock_device", 
+                                            { deviceId, lockMessage },
+                                            (error, response) => {
+                                                if (error) {
+                                                    setError("Không có phản hồi từ máy chủ ( timeout 3000ms )");
+                                                    return;
+                                                }
+                                                if (response.status === "error") {
+                                                    setError(response.message);
+                                                    setMessage("");
+                                                } else if (response.status === "success") {
+                                                    setError("");
+                                                    setMessage(response.message);
+                                                    setDevice(response.device); // Update device state with the new lock status
                                                 } else {
                                                     setError("Không có phản hồi từ máy chủ");
                                                     setMessage("");

@@ -1,0 +1,226 @@
+@keyframes backDropSlideUpFadeOut {
+    0% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+.dialogBackdropExit {
+    animation: backDropSlideUpFadeOut 0.5s ease-in forwards;
+}
+
+.dialogBackdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: start;
+    justify-content: center;
+    padding-top: 24px;
+    z-index: 1000;
+}
+
+@keyframes slideDownScale {
+    0% {
+        opacity: 0;
+        transform: translateY(-40px) scale(0.9);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes slideUpFadeOut {
+    0% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateY(-40px) scale(0.9);
+    }
+}
+
+.dialogEnter {
+    animation: slideDownScale 0.3s ease-out forwards;
+}
+
+.dialogExit {
+    animation: slideUpFadeOut 0.2s ease-in forwards;
+}
+
+.dialog {
+    width: 600px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+}
+
+.title {
+    font-size: 1.5rem;
+    text-align: center;
+    color: #333;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.field {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-bottom: 16px;
+
+    .label {
+        width: 20%;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #333;
+        margin-right: 24px;
+        text-align: right;
+    }
+
+    .inputContainer {
+        flex: 1;
+        height: 34px;
+        display: flex;
+        align-items: center;
+    }
+
+    .inputContainerRadio {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        gap: 50px;
+        padding: 16px 30px;
+        background-color: white;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 0.875rem;
+        color: #555;
+    }
+
+    .inputContainerBorder {
+        background-color: white;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        padding: 0px 12px;
+        font-size: 0.875rem;
+        color: #555;
+    }
+
+    .input {
+        width: 100%;
+        text-align: left;
+        border: none;
+    }
+
+    .radioContainer {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+    }
+
+    .radioLabel {
+        font-size: 0.875rem;
+        color: #333;
+        text-align: left;
+    }
+
+    .radioInput {
+        width: 40px;
+        height: 40px;
+    }
+
+    .checkBox {
+        width: 30px;
+        height: 30px;
+        margin-left: 16px;
+        cursor: pointer;
+    }
+
+    .eyeButton {
+        height: 34px;
+        padding: 14px;
+        color: #333;
+        font-size: 14px;
+        border-radius: 4px;
+        background-color: #fff;
+        border: 1px solid #ccc;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 0px 16px;
+
+        &:hover {
+            background-color: #f6f8fc;
+            border-color: #535353;
+        }
+    }
+}
+
+.clearButton {
+    height: 34px;
+    padding: 14px;
+    color: #333;
+    font-size: 14px;
+    border-radius: 4px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    &:hover {
+        background-color: #f6f8fc;
+        border-color: #535353;
+    }
+}
+
+.fileName {
+    font-size: 0.875rem;
+    color: #333;
+    margin-right: 16px;
+}
+
+.dialogActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+
+    button {
+        padding: 8px 12px;
+        border: none;
+        border-radius: 4px;
+        background: #333;
+        color: white;
+        cursor: pointer;
+
+        &:last-child {
+            background: #ccc;
+            color: black;
+        }
+    }
+}
+
+.error {
+    color: red;
+    font-size: 0.875rem;
+    margin-bottom: 8px;
+    text-align: center;
+    font-weight: 500;
+}
