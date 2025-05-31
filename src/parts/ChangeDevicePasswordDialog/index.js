@@ -11,7 +11,7 @@ const ChangeDevicePasswordDialog = ({ device, isOpen, onClose, onSubmit }) => {
     if (!isOpen) return null;
 
     const handleSubmit = (e) => {
-        if (newPassword.trim().length < 4) {
+        if (newPassword.length > 0 && newPassword.length < 4) {
             setError("Mật khẩu mới phải có ít nhất 4 ký tự");
             return;
         }
@@ -71,7 +71,7 @@ const ChangeDevicePasswordDialog = ({ device, isOpen, onClose, onSubmit }) => {
                         renderTextInputField(
                             "password",
                             "Mật khẩu mới",
-                            "Nhập mật khẩu mới",
+                            "Nhập mật khẩu mới ( để trống nếu muốn tắt )",
                             newPassword,
                             (e) => setNewPassword(e.target.value),
                             false,
