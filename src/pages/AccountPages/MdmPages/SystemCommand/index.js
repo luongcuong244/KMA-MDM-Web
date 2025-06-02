@@ -18,9 +18,6 @@ export default function SystemCommand() {
 
     useEffect(() => {
         socket.connect();
-        socket.on("connect", () => {
-            socket.emit("web:send:get_push_messages");
-        });
         // on error
         socket.on("connect_error", (err) => {
             console.error("Connection error:", err);

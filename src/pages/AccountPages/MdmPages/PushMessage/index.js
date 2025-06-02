@@ -17,7 +17,21 @@ export default function PushMessage() {
     useEffect(() => {
         socket.connect();
         socket.on("connect", () => {
-            socket.emit("web:send:get_push_messages");
+            setIsLoading(true);
+            socket.timeout(3000).emit("web:send:get_push_messages", {}, (error, response) => {
+                if (error) {
+                    setMessage(error.message);
+                    setMesType("error");
+                } else {
+                    if (response.status === "success") {
+                        setPushMessages(response.data);
+                    } else {
+                        setMessage(response.message || "Đã có lỗi xảy ra. Không nhận được dữ liệu trả về từ máy chủ.");
+                        setMesType("error");
+                    }
+                }
+                setIsLoading(false);
+            });
         });
         // on error
         socket.on("connect_error", (err) => {
@@ -25,18 +39,9 @@ export default function PushMessage() {
             setMessage("Không thể kết nối đến máy chủ. Vui lòng kiểm tra lại ip.");
             setMesType("error");
         });
-        socket.on("web:receive:get_push_messages", (data) => {
-            if (data.error) {
-                setMesType("error");
-                setMessage(data.error);
-            } else {
-                setPushMessages(data.data);
-            }
-        });
-
+        
         return () => {
             socket.off("connect");
-            socket.off("web:receive:get_push_messages");
             socket.disconnect();
         }
     }, [])
