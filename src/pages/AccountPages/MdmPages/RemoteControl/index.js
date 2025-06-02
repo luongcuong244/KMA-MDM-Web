@@ -46,6 +46,11 @@ export default function RemoteControl() {
         socket.on("connect", () => {
             console.log("Socket connected");
         })
+        // on error
+        socket.on("connect_error", (err) => {
+            console.error("Connection error:", err);
+            setError("Không thể kết nối đến máy chủ. Vui lòng kiểm tra lại ip.");
+        });
         socket.on("web:receive:accept_remote_control", (data) => {
             if (data.status === "success") {
                 streamState.current.readyForRemoteControl = true;

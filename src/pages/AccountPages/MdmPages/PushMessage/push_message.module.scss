@@ -203,3 +203,11 @@
         border-color: #535353;
     }
 }
+
+.loaderContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 25px;
+    margin-bottom: 5px;
+}

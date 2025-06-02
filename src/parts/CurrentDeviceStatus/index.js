@@ -39,8 +39,15 @@ const CurrentDeviceStatus = ({ isOpen, onClose, deviceId }) => {
                 }
             });
         });
+        // on error
+        socket.on("connect_error", (err) => {
+            console.error("Connection error:", err);
+            setError("Không thể kết nối đến máy chủ. Vui lòng kiểm tra lại ip.");
+            setIsLoading(false);
+        });
         return () => {
             socket.off("connect");
+            socket.off("connect_error");
             socket.disconnect();
         }
     }, []);

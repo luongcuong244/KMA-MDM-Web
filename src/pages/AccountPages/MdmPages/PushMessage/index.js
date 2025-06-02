@@ -1,11 +1,14 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import styles from "./push_message.module.scss";
 import socket from "../../../../socket/socket";
 import AddMessageDialog from "../../../../parts/AddMessageDialog";
 import Converter from "../../../../utils/converter";
+import Loader from "../../../../components/Loader";
 
 export default function PushMessage() {
-    const [error, setError] = useState(null);
+    const [message, setMessage] = useState(null);
+    const [mesType, setMesType] = useState("error"); // [error, warning, success]
+    const [isLoading, setIsLoading] = useState(false);
     const [pushMessages, setPushMessages] = useState([]);
 
     const [searchTerm, setSearchTerm] = useState("");
@@ -16,25 +19,24 @@ export default function PushMessage() {
         socket.on("connect", () => {
             socket.emit("web:send:get_push_messages");
         });
+        // on error
+        socket.on("connect_error", (err) => {
+            console.error("Connection error:", err);
+            setMessage("Không thể kết nối đến máy chủ. Vui lòng kiểm tra lại ip.");
+            setMesType("error");
+        });
         socket.on("web:receive:get_push_messages", (data) => {
             if (data.error) {
-                setError(data.error);
+                setMesType("error");
+                setMessage(data.error);
             } else {
                 setPushMessages(data.data);
-            }
-        });
-        socket.on("web:receive:push_message", (data) => {
-            if (data.status === "error" && data.message) {
-                alert(data.message);
-            } else if (data.status === "success" && data.data) {
-                setPushMessages((prev) => [data.data, ...prev]);
             }
         });
 
         return () => {
             socket.off("connect");
             socket.off("web:receive:get_push_messages");
-            socket.off("web:receive:push_message");
             socket.disconnect();
         }
     }, [])
@@ -48,7 +50,30 @@ export default function PushMessage() {
     }
 
     const handleSubmit = (message) => {
-        socket.emit("web:send:push_message", message);
+        setIsLoading(true);
+        socket.timeout(6000).emit("web:send:push_message", message, (error, response) => {
+            if (error) {
+                setMessage(error.message);
+                setMesType("error");
+                setIsLoading(false);
+            } else {
+                if (response.message) {
+                    setMessage(response.message);
+                }
+                if (response.status === "error") {
+                    setMesType("error");
+                } else if (response.status === "warning") {
+                    setMesType("warning");
+                } else if (response.status === "success" && response.data) {
+                    setMesType("success");
+                    setPushMessages((prev) => [response.data, ...prev]);
+                } else {
+                    setMesType("error");
+                    setMessage("Đã có lỗi xảy ra. Không nhận được dữ liệu trả về từ máy chủ.");
+                }
+                setIsLoading(false);
+            }
+        });
     };
 
     const filteredPushMessages = pushMessages.filter((message) => {
@@ -62,6 +87,25 @@ export default function PushMessage() {
 
     return (
         <div id={styles.root}>
+            {
+                !isLoading && message && (
+                    <div className={styles.error}>
+                        <span 
+                            style={{
+                                color: mesType === "error" ? "red" : mesType === "warning" ? "orange" : "green"
+                            }}
+                            className={styles.errorText}
+                        >{message}</span>
+                    </div>
+                )
+            }
+            {
+                isLoading && (
+                    <div className={styles.loaderContainer}>
+                        <Loader />
+                    </div>
+                )
+            }
             <div className={styles.searchBarContainer}>
                 <input
                     type="text"
@@ -108,13 +152,6 @@ export default function PushMessage() {
             {
                 filteredPushMessages.length === 0 && (
                     <span className={styles.noData}>Không có dữ liệu</span>
-                )
-            }
-            {
-                error && (
-                    <div className={styles.error}>
-                        <span className={styles.errorText}>{error}</span>
-                    </div>
                 )
             }
             {

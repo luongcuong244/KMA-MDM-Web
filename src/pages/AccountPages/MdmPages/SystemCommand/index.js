@@ -21,6 +21,11 @@ export default function SystemCommand() {
         socket.on("connect", () => {
             socket.emit("web:send:get_push_messages");
         });
+        // on error
+        socket.on("connect_error", (err) => {
+            console.error("Connection error:", err);
+            setError("Không thể kết nối đến máy chủ. Vui lòng kiểm tra lại ip.");
+        });
         socket.on("web:receive:system_command", (data) => {
             if (data.error) {
                 setError(data.error);
