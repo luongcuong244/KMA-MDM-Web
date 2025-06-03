@@ -51,15 +51,6 @@ export default function RemoteControl() {
             console.error("Connection error:", err);
             setError("Không thể kết nối đến máy chủ. Vui lòng kiểm tra lại ip.");
         });
-        socket.on("web:receive:accept_remote_control", (data) => {
-            if (data.status === "success") {
-                streamState.current.readyForRemoteControl = true;
-            } else {
-                setError(data.message || "Không thể kết nối đến máy chủ điều khiển từ xa");
-                streamState.current.readyForRemoteControl = false;
-                streamState.current.isRemoteControlEnabled = false;
-            }
-        })
 
         webRTC.current = new WebRTC("client-id", streamState.current, onNewTrack);
         webRTC.current.waitForServerOnlineAndConnect();
@@ -99,7 +90,6 @@ export default function RemoteControl() {
             window.removeEventListener('beforeunload', beforeUnloadHandler);
 
             socket.off("connect");
-            socket.off("web:receive:accept_remote_control");
             socket.disconnect();
         }
     }, [])
@@ -243,14 +233,23 @@ export default function RemoteControl() {
 
                     if (socket.connected) {
                         console.log("Requesting remote control for device:", deviceId);
-                        socket.emit("web:send:request_remote_control", {
+                        // we need to wait for the user confirmation ( max 10s )
+                        socket.timeout(15000).emit("web:send:request_remote_control", {
                             deviceId: deviceId,
-                        }, (response) => {
+                        }, (error, response) => {
+                            if (error) {
+                                streamState.current.isRemoteControlEnabled = false;
+                                streamState.current.readyForRemoteControl = false;
+                                console.error("Error requesting remote control:", error);
+                                setError(error.message || "Không thể kết nối đến máy chủ điều khiển từ xa");
+                                return;
+                            }
                             if (response.status == "error") {
                                 streamState.current.isRemoteControlEnabled = false;
+                                streamState.current.readyForRemoteControl = false;
                                 setError(response.message || "Không thể kết nối đến máy chủ điều khiển từ xa");
                             } else {
-                                // wait for the stream to be ready
+                                streamState.current.readyForRemoteControl = true;
                             }
                         })
                     } else {
