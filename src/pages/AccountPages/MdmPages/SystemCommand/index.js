@@ -23,24 +23,7 @@ export default function SystemCommand() {
             console.error("Connection error:", err);
             setError("Không thể kết nối đến máy chủ. Vui lòng kiểm tra lại ip.");
         });
-        socket.on("web:receive:system_command", (data) => {
-            if (data.error) {
-                setError(data.error);
-                setMessage("");
-            } else if (data.message) {
-                setMessage(data.message);
-                setError("");
-                if (data.device) {
-                    setDevice(data.device);
-                }
-            } else {
-                setError("");
-                setMessage("");
-            }
-        });
         return () => {
-            socket.off("connect");
-            socket.off("web:receive:system_command");
             socket.disconnect();
         }
     }, [])
@@ -81,9 +64,25 @@ export default function SystemCommand() {
     const clickReboot = () => {
         if (device) {
             if (window.confirm(`Bạn có chắc chắn muốn khởi động lại thiết bị "${deviceId}" không?`) === true) {
-                socket.emit("web:send:reboot", { deviceId });
-            } else {
-                return;
+                socket.timeout(5000).emit("web:send:reboot", { deviceId }, (error, response) => {
+                    if (error) {
+                        setError("Không có phản hồi từ máy chủ ( timeout 5000ms )");
+                        return;
+                    }
+                    if (response.status === "error") {
+                        setError(response.message);
+                        setMessage("");
+                    } else if (response.status === "success") {
+                        setError("");
+                        setMessage(response.message);
+                        if (response.device) {
+                            setDevice(response.device); // Update device state with the new reboot status
+                        }
+                    } else {
+                        setError("Không có phản hồi từ máy chủ");
+                        setMessage("");
+                    }
+                });
             }
         }
     }
@@ -123,9 +122,25 @@ export default function SystemCommand() {
     const clickFactoryReset = () => {
         if (device) {
             if (window.confirm(`Bạn có chắc chắn muốn khôi phục cài đặt gốc thiết bị "${deviceId}" không?`) === true) {
-                socket.emit("web:send:factory_reset", { deviceId });
-            } else {
-                return;
+                socket.timeout(5000).emit("web:send:factory_reset", { deviceId }, (error, response) => {
+                    if (error) {
+                        setError("Không có phản hồi từ máy chủ ( timeout 5000ms )");
+                        return;
+                    }
+                    if (response.status === "error") {
+                        setError(response.message);
+                        setMessage("");
+                    } else if (response.status === "success") {
+                        setError("");
+                        setMessage(response.message);
+                        if (response.device) {
+                            setDevice(response.device); // Update device state with the new factory reset status
+                        }
+                    } else {
+                        setError("Không có phản hồi từ máy chủ");
+                        setMessage("");
+                    }
+                });
             }
         }
     }
