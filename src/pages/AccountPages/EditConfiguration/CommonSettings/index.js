@@ -5,7 +5,7 @@ import clsx from "clsx";
 export default function CommonSettings({ configuration }) {
     const [name, setName] = React.useState(configuration.name || "");
     const [description, setDescription] = React.useState(configuration.description || "");
-    const [adminPassword, setAdminPassword] = React.useState(configuration.adminPassword || "");
+    const [adminPassword, setAdminPassword] = React.useState(configuration.adminPassword || "1111");
     const [showPassword, setShowPassword] = React.useState(false);
     const [gps, setGps] = React.useState(configuration.gps || "Any");
     const [bluetooth, setBluetooth] = React.useState(configuration.bluetooth || "Any");
@@ -123,7 +123,7 @@ export default function CommonSettings({ configuration }) {
                     false
                 )
             }
-            {
+            {/* {
                 renderTextInputField(
                     "password",
                     "Mật khẩu quản trị viên",
@@ -137,7 +137,7 @@ export default function CommonSettings({ configuration }) {
                     showPassword,
                     () => setShowPassword(!showPassword)
                 )
-            }
+            } */}
             {
                 renderRadioGroupField(
                     "GPS",

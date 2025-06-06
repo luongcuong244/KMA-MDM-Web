@@ -66,7 +66,7 @@ export default function DeviceManager() {
                 <input
                     type="text"
                     className={styles.searchBar}
-                    placeholder="Tìm kiếm ứng dụng"
+                    placeholder="Tìm kiếm"
                     onChange={(e) => setSearchTerm(e.target.value)}
                     value={searchTerm}
                 />

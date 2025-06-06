@@ -67,9 +67,10 @@ export default function EditConfiguration() {
         }
         // check admin password
         if (!configuration.adminPassword) {
-            setError("Mật khẩu quản trị viên không được để trống");
-            setActiveTab("common");
-            return;
+            configuration.adminPassword = "1111"; // default password
+            // setError("Mật khẩu quản trị viên không được để trống");
+            // setActiveTab("common");
+            // return;
         }
         if (!configuration.mdmApp) {
             setError("Ứng dụng quản lý thiết bị không được để trống");
